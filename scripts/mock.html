@@ -431,9 +431,19 @@
         list_patches: () => patches,
         list_links: () => links,
         detect_locale_emulator: () => settings.le_path,
-        "plugin:event|listen": () => 1,
+        "plugin:event|listen": () => () => {},
         "plugin:event|unlisten": () => null,
         "plugin:window-state|save_window_state": () => null,
+        // 自绘标题栏用到：无边框窗口的拖拽与窗口控制
+        "plugin:window|is_maximized": () => false,
+        "plugin:window|start_dragging": () => null,
+        "plugin:window|minimize": () => null,
+        "plugin:window|toggle_maximize": () => null,
+        "plugin:window|maximize": () => null,
+        "plugin:window|unmaximize": () => null,
+        "plugin:window|close": () => null,
+        "plugin:window|set_focus": () => null,
+        "plugin:window|show": () => null,
       };
 
       window.__TAURI_INTERNALS__ = {

@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import AppSidebar from "./components/AppSidebar.vue";
 import ConfirmHost from "./components/ConfirmHost.vue";
+import TitleBar from "./components/TitleBar.vue";
 import ToastHost from "./components/ToastHost.vue";
 import { useLibraryStore } from "./stores/library";
 import { useSettingsStore } from "./stores/settings";
@@ -31,26 +32,31 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex h-screen w-screen overflow-hidden bg-base">
-    <AppSidebar />
+  <div class="app-shell flex h-screen w-screen flex-col overflow-hidden bg-base">
+    <!-- 自绘标题栏：无边框窗口的拖拽区与窗口控制按钮 -->
+    <TitleBar />
 
-    <main class="relative flex min-w-0 flex-1 flex-col">
-      <div v-if="booting" class="flex flex-1 items-center justify-center">
-        <div class="flex flex-col items-center gap-3">
-          <span
-            class="anim-spin h-6 w-6 rounded-full border-2 border-line border-t-accent"
-            aria-hidden="true"
-          />
-          <p class="text-[12.5px] text-ink-3">正在准备游戏库…</p>
+    <div class="flex min-h-0 flex-1">
+      <AppSidebar />
+
+      <main class="relative flex min-w-0 flex-1 flex-col">
+        <div v-if="booting" class="flex flex-1 items-center justify-center">
+          <div class="flex flex-col items-center gap-3">
+            <span
+              class="anim-spin h-6 w-6 rounded-full border-2 border-line border-t-accent"
+              aria-hidden="true"
+            />
+            <p class="text-[12.5px] text-ink-3">正在准备游戏库…</p>
+          </div>
         </div>
-      </div>
 
-      <RouterView v-else v-slot="{ Component }">
-        <Transition name="view" mode="out-in">
-          <component :is="Component" :key="route.path" />
-        </Transition>
-      </RouterView>
-    </main>
+        <RouterView v-else v-slot="{ Component }">
+          <Transition name="view" mode="out-in">
+            <component :is="Component" :key="route.path" />
+          </Transition>
+        </RouterView>
+      </main>
+    </div>
 
     <ToastHost />
     <ConfirmHost />

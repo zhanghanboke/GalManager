@@ -59,10 +59,32 @@ body {
   user-select: none;
 }
 
+/* 应用外壳：左上紫罗兰、右上玫瑰粉的两团极淡辉光，制造空间纵深 */
+.app-shell {
+  background-image:
+    radial-gradient(880px 460px at 10% -12%, rgba(139, 124, 246, 0.11), transparent 64%),
+    radial-gradient(720px 420px at 96% -4%, rgba(244, 114, 182, 0.07), transparent 62%);
+  background-repeat: no-repeat;
+}
+
 input,
 textarea,
 [contenteditable="true"] {
   user-select: text;
+}
+
+::selection {
+  background: rgba(139, 124, 246, 0.32);
+}
+
+/* 键盘可达性：只在键盘导航时显示焦点环，鼠标点击不显示 */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  border-radius: 6px;
+}
+.field:focus-visible {
+  outline: none;
 }
 
 /* 滚动条：极细、低调 */
@@ -105,12 +127,13 @@ textarea,
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease,
-    transform 0.1s ease;
+    box-shadow 0.16s ease, transform 0.1s ease;
   border: 1px solid transparent;
 }
 @utility btn-primary {
-  background: var(--color-accent);
+  background: linear-gradient(180deg, var(--color-accent-hi), var(--color-accent));
   color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 @utility btn-ghost {
   background: var(--color-surface-2);
@@ -130,11 +153,12 @@ textarea,
   transform: translateY(0);
 }
 .btn-primary:hover {
-  background: var(--color-accent-hi);
+  box-shadow: 0 4px 14px -2px rgba(139, 124, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 .btn-ghost:hover {
   background: var(--color-surface-3);
   color: var(--color-ink);
+  border-color: #333a49;
 }
 .btn-danger:hover {
   background: #2a1618;
@@ -254,10 +278,6 @@ textarea.field {
 .scroll-y {
   overflow-y: auto;
   overflow-x: hidden;
-}
-
-.no-drag {
-  -webkit-app-region: no-drag;
 }
 
 .line-clamp-1 {

@@ -25,7 +25,8 @@
         "center": true,
         "dragDropEnabled": true,
         "visible": false,
-        "decorations": true,
+        "decorations": false,
+        "shadow": true,
         "theme": "Dark"
       }
     ],
@@ -33,13 +34,18 @@
       "csp": null,
       "assetProtocol": {
         "enable": true,
-        "scope": ["**"]
+        "scope": [
+          "**"
+        ]
       }
     }
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "msi"],
+    "targets": [
+      "nsis",
+      "msi"
+    ],
     "publisher": "GalManager",
     "copyright": "Copyright © 2026 GalManager",
     "category": "Utility",
@@ -55,12 +61,17 @@
     "windows": {
       "nsis": {
         "installerIcon": "icons/icon.ico",
-        "languages": ["SimpChinese", "English"],
+        "languages": [
+          "SimpChinese",
+          "English"
+        ],
         "displayLanguageSelector": true,
         "installMode": "currentUser"
       },
       "wix": {
-        "language": ["zh-CN"]
+        "language": [
+          "zh-CN"
+        ]
       }
     }
   }

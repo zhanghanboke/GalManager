@@ -117,7 +117,7 @@ onUnmounted(() => {
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 工具栏 -->
-    <header class="shrink-0 border-b border-line-soft px-5 pt-3.5 pb-3">
+    <header class="shrink-0 border-b border-line-soft bg-surface/35 px-5 pt-3.5 pb-3">
       <div class="flex items-center gap-2.5">
         <div class="relative flex-1 max-w-[380px]">
           <svg

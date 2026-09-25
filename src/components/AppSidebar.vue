@@ -68,35 +68,24 @@ async function removeCategory(id: number, name: string) {
 </script>
 
 <template>
-  <aside
-    class="flex w-[228px] shrink-0 flex-col border-r border-line-soft bg-surface"
-    style="-webkit-app-region: drag"
-  >
-    <!-- 品牌区 -->
-    <div class="flex items-center gap-2.5 px-4 pt-4 pb-3.5">
-      <div
-        class="flex h-8 w-8 items-center justify-center rounded-[10px] bg-gradient-to-br from-accent to-rose text-[15px] font-bold text-white shadow-lg shadow-accent/20"
-      >
-        G
-      </div>
-      <div class="leading-tight">
-        <p class="text-[13.5px] font-semibold tracking-tight text-ink">GalManager</p>
-        <p class="text-[10.5px] text-ink-3">Galgame 管理器</p>
-      </div>
-    </div>
-
-    <nav class="no-drag px-2.5">
+  <aside class="flex w-[228px] shrink-0 flex-col border-r border-line-soft bg-surface">
+    <nav class="px-2.5 pt-3">
       <RouterLink
         v-for="item in navItems"
         :key="item.name"
         :to="item.to"
-        class="group mb-0.5 flex h-9 items-center gap-2.5 rounded-[9px] px-2.5 text-[13px] transition"
+        class="group relative mb-0.5 flex h-9 items-center gap-2.5 rounded-[9px] px-2.5 text-[13px] transition"
         :class="
           route.name === item.name
             ? 'bg-surface-3 font-medium text-ink'
             : 'text-ink-2 hover:bg-surface-2 hover:text-ink'
         "
       >
+        <!-- 选中态左侧指示条 -->
+        <span
+          class="absolute top-1/2 -left-2.5 h-4 w-[2.5px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-accent to-rose transition-opacity"
+          :class="route.name === item.name ? 'opacity-100' : 'opacity-0'"
+        />
         <svg
           width="15"
           height="15"
@@ -149,7 +138,7 @@ async function removeCategory(id: number, name: string) {
       <div class="flex items-center justify-between px-4 pb-1.5">
         <span class="text-[10.5px] font-semibold tracking-widest text-ink-3 uppercase">分类</span>
         <button
-          class="no-drag flex h-5 w-5 items-center justify-center rounded-md text-ink-3 transition hover:bg-surface-3 hover:text-ink"
+          class="flex h-5 w-5 items-center justify-center rounded-md text-ink-3 transition hover:bg-surface-3 hover:text-ink"
           title="新建分类"
           @click="addingCategory = !addingCategory"
         >
@@ -159,7 +148,7 @@ async function removeCategory(id: number, name: string) {
         </button>
       </div>
 
-      <form v-if="addingCategory" class="no-drag px-3 pb-1.5" @submit.prevent="submitCategory">
+      <form v-if="addingCategory" class="px-3 pb-1.5" @submit.prevent="submitCategory">
         <input
           v-model="newCategoryName"
           class="field h-7 text-[12px]"
@@ -169,7 +158,7 @@ async function removeCategory(id: number, name: string) {
         />
       </form>
 
-      <div class="no-drag min-h-0 flex-1 scroll-y px-2.5">
+      <div class="min-h-0 flex-1 scroll-y px-2.5">
         <button
           class="mb-0.5 flex h-8 w-full items-center gap-2 rounded-lg px-2.5 text-[12.5px] transition"
           :class="
@@ -270,7 +259,7 @@ async function removeCategory(id: number, name: string) {
     </div>
 
     <!-- 运行中 -->
-    <div v-if="settings.running.length" class="no-drag border-t border-line-soft px-3 py-3">
+    <div v-if="settings.running.length" class="border-t border-line-soft px-3 py-3">
       <div class="mb-2 flex items-center gap-1.5">
         <span class="relative flex h-1.5 w-1.5">
           <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan opacity-70" />

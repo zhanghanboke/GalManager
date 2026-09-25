@@ -68,7 +68,7 @@ function onContextMenu(event: MouseEvent) {
   >
     <!-- 封面 -->
     <div
-      class="relative overflow-hidden rounded-xl border bg-surface-2 transition duration-200 group-hover:-translate-y-1 group-hover:border-accent/40 group-hover:shadow-xl group-hover:shadow-black/40"
+      class="relative overflow-hidden rounded-xl border bg-surface-2 transition duration-200 group-hover:-translate-y-1 group-hover:border-accent/45 group-hover:shadow-2xl group-hover:shadow-accent/10"
       :class="selected ? 'border-accent ring-2 ring-accent/40' : 'border-line-soft'"
       style="aspect-ratio: 3 / 4"
     >
