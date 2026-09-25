@@ -19,6 +19,7 @@ pub fn defaults() -> HashMap<String, String> {
     map.insert("scan_roots".into(), "[]".into());
     map.insert("scan_max_depth".into(), "3".into());
     map.insert("grid_size".into(), "md".into());
+    map.insert("view_mode".into(), "grid".into());
     map.insert("sort_by".into(), "title".into());
     map.insert("sort_desc".into(), "false".into());
     map.insert("minimize_to_tray".into(), "true".into());

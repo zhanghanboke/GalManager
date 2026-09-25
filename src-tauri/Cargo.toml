@@ -53,6 +53,8 @@ thiserror = "2"
 
 # 日志
 log = "0.4"
+# 拼音检索（只取「无调全拼 + 首字母」，关掉用不到的声调/多音字特性以减小体积）
+pinyin = { version = "0.11.0", default-features = false, features = ["plain"] }
 
 # Windows 专属：提权启动与快捷方式解析
 [target.'cfg(windows)'.dependencies]

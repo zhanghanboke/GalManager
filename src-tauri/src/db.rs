@@ -40,12 +40,64 @@ impl Db {
     fn migrate(&self) -> AppResult<()> {
         let conn = self.conn.lock();
         conn.execute_batch(SCHEMA)?;
+        // 增量迁移：老库没有 search_index 列，需要补列并回填
+        self.ensure_search_index(&conn)?;
         // 记录 schema 版本，方便后续做破坏性迁移
         conn.execute(
             "INSERT OR REPLACE INTO meta(key, value) VALUES ('schema_version', ?1)",
             params![SCHEMA_VERSION.to_string()],
         )?;
         Ok(())
+    }
+
+    /// 确保 `games.search_index` 存在。
+    ///
+    /// SQLite 不支持 `ADD COLUMN IF NOT EXISTS`，因此先查 `PRAGMA table_info`；
+    /// 对老库补列后立即回填一遍拼音索引，保证升级后搜索立即可用。
+    fn ensure_search_index(&self, conn: &Connection) -> AppResult<()> {
+        let has_column = {
+            let mut stmt = conn.prepare("PRAGMA table_info(games)")?;
+            let names = stmt
+                .query_map([], |row| row.get::<_, String>(1))?
+                .collect::<Result<Vec<_>, _>>()?;
+            names.iter().any(|name| name == "search_index")
+        };
+        if has_column {
+            return Ok(());
+        }
+
+        conn.execute("ALTER TABLE games ADD COLUMN search_index TEXT", [])?;
+        log::info!("已为 games 表补充 search_index 列，开始回填拼音索引");
+        let count = self.rebuild_search_index(conn)?;
+        log::info!("拼音索引回填完成，共 {count} 条");
+        Ok(())
+    }
+
+    /// 重算全部游戏的拼音检索索引，返回处理的条数。
+    pub fn rebuild_search_index(&self, conn: &Connection) -> AppResult<usize> {
+        let rows: Vec<(i64, String, Option<String>, Option<String>)> = {
+            let mut stmt =
+                conn.prepare("SELECT id, title, original_title, developer FROM games")?;
+            let collected = stmt
+                .query_map([], |row| {
+                    Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?))
+                })?
+                .collect::<Result<Vec<_>, _>>()?;
+            collected
+        };
+
+        for (id, title, original_title, developer) in &rows {
+            let index = crate::search::build_search_index(
+                title,
+                original_title.as_deref(),
+                developer.as_deref(),
+            );
+            conn.execute(
+                "UPDATE games SET search_index = ?1 WHERE id = ?2",
+                params![index, id],
+            )?;
+        }
+        Ok(rows.len())
     }
 
     /// 暴露底层连接，供需要事务的复合操作使用。
@@ -273,11 +325,14 @@ impl Db {
 
             if !filter.keyword.trim().is_empty() {
                 let kw = format!("%{}%", filter.keyword.trim());
+                // search_index 是拼音索引（全拼 + 首字母），因此 `qlwh`、`qianlian`
+                // 也能命中「千恋万花」；原文匹配仍由前四个 LIKE 负责。
                 sql.push_str(
                     " AND (g.title LIKE ? OR IFNULL(g.original_title,'') LIKE ?
-                       OR IFNULL(g.developer,'') LIKE ? OR IFNULL(g.path,'') LIKE ?)",
+                       OR IFNULL(g.developer,'') LIKE ? OR IFNULL(g.path,'') LIKE ?
+                       OR IFNULL(g.search_index,'') LIKE ?)",
                 );
-                for _ in 0..4 {
+                for _ in 0..5 {
                     args.push(Box::new(kw.clone()));
                 }
             }
@@ -360,8 +415,8 @@ impl Db {
                 "INSERT INTO games(
                     title, original_title, path, executable, args, cover_path, engine, engine_confidence,
                     category_id, play_status, favorite, rating, le_launch, le_locale,
-                    release_date, developer, description, notes, save_path, sort_order)
-                 VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20)",
+                    release_date, developer, description, notes, save_path, sort_order, search_index)
+                 VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21)",
                 params![
                     input.title.trim(),
                     input.original_title,
@@ -383,6 +438,11 @@ impl Db {
                     input.notes,
                     input.save_path,
                     order,
+                    crate::search::build_search_index(
+                        input.title.trim(),
+                        input.original_title.as_deref(),
+                        input.developer.as_deref(),
+                    ),
                 ],
             )?;
             let id = tx.last_insert_rowid();
@@ -444,6 +504,26 @@ impl Db {
             if let Some(tags) = &input.tags {
                 Self::set_game_tags(tx, id, tags)?;
             }
+
+            // 标题 / 原名 / 开发商可能刚被改过，重算拼音索引。
+            // 这里是局部更新，必须基于库里当前的值算，不能只看入参。
+            let (title, original_title, developer): (String, Option<String>, Option<String>) = tx
+                .query_row(
+                    "SELECT title, original_title, developer FROM games WHERE id = ?1",
+                    params![id],
+                    |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+                )?;
+            tx.execute(
+                "UPDATE games SET search_index = ?1 WHERE id = ?2",
+                params![
+                    crate::search::build_search_index(
+                        &title,
+                        original_title.as_deref(),
+                        developer.as_deref(),
+                    ),
+                    id
+                ],
+            )?;
             Ok(())
         })
     }
@@ -1282,6 +1362,8 @@ CREATE TABLE IF NOT EXISTS games (
     notes             TEXT,
     save_path         TEXT,
     sort_order        INTEGER NOT NULL DEFAULT 0,
+    -- 拼音检索索引（全拼 + 首字母），由 search::build_search_index 生成
+    search_index      TEXT,
     created_at        TEXT NOT NULL DEFAULT (datetime('now','localtime')),
     updated_at        TEXT NOT NULL DEFAULT (datetime('now','localtime'))
 );
@@ -1360,3 +1442,141 @@ CREATE TABLE IF NOT EXISTS resource_links (
     created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
 );
 "#;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    /// 每个用例用独立的临时库文件，避免互相干扰
+    fn temp_db(tag: &str) -> (Db, PathBuf) {
+        let path = std::env::temp_dir().join(format!(
+            "galmanager_dbtest_{tag}_{}.db",
+            std::process::id()
+        ));
+        cleanup(&path);
+        (Db::open(&path).expect("打开临时数据库失败"), path)
+    }
+
+    fn cleanup(path: &Path) {
+        let _ = std::fs::remove_file(path);
+        for suffix in ["-wal", "-shm"] {
+            let _ = std::fs::remove_file(format!("{}{suffix}", path.display()));
+        }
+    }
+
+    fn add_game(db: &Db, title: &str, original: Option<&str>, developer: Option<&str>) -> i64 {
+        db.create_game(&GameInput {
+            title: title.to_string(),
+            original_title: original.map(str::to_string),
+            developer: developer.map(str::to_string),
+            ..Default::default()
+        })
+        .expect("创建游戏失败")
+    }
+
+    fn search(db: &Db, keyword: &str) -> Vec<String> {
+        let filter = GameFilter {
+            keyword: keyword.to_string(),
+            ..Default::default()
+        };
+        let mut titles: Vec<String> = db
+            .list_games(&filter)
+            .expect("查询失败")
+            .into_iter()
+            .map(|game| game.title)
+            .collect();
+        titles.sort();
+        titles
+    }
+
+    #[test]
+    fn pinyin_initials_and_full_pinyin_find_chinese_title() {
+        let (db, path) = temp_db("pinyin_basic");
+        add_game(&db, "千恋万花", Some("Senren * Banka"), Some("柚子社"));
+        add_game(&db, "白色相簿2", None, Some("Leaf"));
+
+        assert_eq!(search(&db, "qlwh"), ["千恋万花"], "首字母检索失败");
+        assert_eq!(search(&db, "qianlian"), ["千恋万花"], "全拼检索失败");
+        assert_eq!(search(&db, "千恋"), ["千恋万花"], "原文检索应仍然可用");
+        assert_eq!(search(&db, "QLWH"), ["千恋万花"], "关键词应先转小写");
+        cleanup(&path);
+    }
+
+    #[test]
+    fn pinyin_search_matches_developer() {
+        let (db, path) = temp_db("pinyin_dev");
+        add_game(&db, "千恋万花", None, Some("柚子社"));
+        add_game(&db, "CLANNAD", None, Some("Key"));
+
+        assert_eq!(search(&db, "yzs"), ["千恋万花"]);
+        assert_eq!(search(&db, "youzishe"), ["千恋万花"]);
+        cleanup(&path);
+    }
+
+    #[test]
+    fn pinyin_search_does_not_over_match() {
+        let (db, path) = temp_db("pinyin_negative");
+        add_game(&db, "白色相簿2", None, None);
+        assert!(search(&db, "qlwh").is_empty(), "不该命中无关标题");
+        cleanup(&path);
+    }
+
+    #[test]
+    fn search_index_is_refreshed_after_update() {
+        let (db, path) = temp_db("pinyin_update");
+        let id = add_game(&db, "白色相簿2", None, None);
+        assert!(search(&db, "qlwh").is_empty());
+
+        db.update_game(
+            id,
+            &GameInput {
+                title: "千恋万花".to_string(),
+                ..Default::default()
+            },
+        )
+        .expect("更新失败");
+
+        assert_eq!(search(&db, "qlwh"), ["千恋万花"], "改名后索引应同步刷新");
+        cleanup(&path);
+    }
+
+    /// 老库（没有 search_index 列）打开时应自动补列并回填，升级后搜索立即可用
+    #[test]
+    fn legacy_database_is_migrated_and_backfilled() {
+        let path = std::env::temp_dir().join(format!(
+            "galmanager_dbtest_legacy_{}.db",
+            std::process::id()
+        ));
+        cleanup(&path);
+
+        {
+            let conn = Connection::open(&path).unwrap();
+            conn.execute_batch(
+                "CREATE TABLE games (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    original_title TEXT, path TEXT, executable TEXT, args TEXT, cover_path TEXT,
+                    engine TEXT, engine_confidence INTEGER NOT NULL DEFAULT 0, category_id INTEGER,
+                    play_status TEXT NOT NULL DEFAULT 'unplayed', favorite INTEGER NOT NULL DEFAULT 0,
+                    rating INTEGER NOT NULL DEFAULT -1, le_launch INTEGER NOT NULL DEFAULT 0,
+                    le_locale TEXT, total_play_seconds INTEGER NOT NULL DEFAULT 0, last_played_at TEXT,
+                    release_date TEXT, developer TEXT, description TEXT, notes TEXT, save_path TEXT,
+                    sort_order INTEGER NOT NULL DEFAULT 0,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+                    updated_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+                 );
+                 INSERT INTO games(title, developer) VALUES ('千恋万花', '柚子社');",
+            )
+            .unwrap();
+        }
+
+        let db = Db::open(&path).expect("打开老库失败");
+        assert_eq!(
+            search(&db, "qlwh"),
+            ["千恋万花"],
+            "老库升级后应能立即用拼音搜到"
+        );
+        cleanup(&path);
+    }
+}

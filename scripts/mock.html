@@ -108,6 +108,28 @@
         };
       });
 
+      /* 拼音检索索引：由后端 search::build_search_index 真实生成后粘贴于此，
+         用于在浏览器预览里复现「输入 qlwh 命中 千恋万花」的效果。
+         重新生成：cargo test --lib -- --ignored --nocapture print_mock_indices */
+      const SEARCH_INDEX = {
+        "千恋万花": "qianlianwanhua qlwh youzishe yzs",
+        "ATRI -My Dear Moments-": "atri-mydearmoments- atri-mydearmoments- frontwing frontwing",
+        "樱之诗": "yingzhishi yzs zhen z",
+        "Summer Pockets REFLECTION BLUE": "summerpocketsreflectionblue summerpocketsreflectionblue key key",
+        "素晴日": "suqingri sqr ケロq ケロq",
+        "苍之彼方的四重奏": "cangzhibifangdesizhongzou czbfdszz sprite sprite",
+        "近月少女的礼仪": "jinyueshaonüdeliyi jysndly navel navel",
+        "美好的每一天": "meihaodemeiyitian mhdmyt ケロq ケロq",
+        "月姬": "yueji yj type-moon type-moon",
+        "Fate/stay night": "fate/staynight fate/staynight type-moon type-moon",
+        "白色相簿2": "baisexiangbu2 bsxb2 leaf leaf",
+        "ISLAND": "island island frontwing frontwing",
+        "纸上的魔法使": "zhishangdemofashi zsdmfs ういんどみるoasis ういんどみるoasis",
+        "金辉恋曲四重奏": "jinhuilianqusizhongzou jhlqszz sagaplanets sagaplanets",
+        "爱上火车": "aishanghuoche ashc lose lose",
+        "CLANNAD": "clannad clannad key key",
+      };
+
       const categories = [
         { id: 1, name: "已通关", icon: null, sortOrder: 1, gameCount: 0 },
         { id: 2, name: "在玩中", icon: null, sortOrder: 2, gameCount: 0 },
@@ -374,7 +396,8 @@
               (g) =>
                 g.title.toLowerCase().includes(kw) ||
                 (g.originalTitle ?? "").toLowerCase().includes(kw) ||
-                (g.developer ?? "").toLowerCase().includes(kw),
+                (g.developer ?? "").toLowerCase().includes(kw) ||
+                (SEARCH_INDEX[g.title] ?? "").includes(kw),
             );
           }
           for (const t of f.tags ?? []) out = out.filter((g) => g.tags.some((x) => x.name === t));
@@ -416,7 +439,42 @@
           evidence: ["存在文件特征 .xp3", "存在目录 savedata"],
         }),
         running_games: () => [],
+        // 扫描向导 / 拖拽导入：返回与传入根目录相关的假候选，便于验证路径确实传到了后端
+        scan_directory: (args) => {
+          const root = (args && args.options && args.options.root) || "D:\\Galgame";
+          const base = String(root).replace(/[\\/]+$/, "");
+          return [
+            { name: "千恋万花", engine: "kirikiri", engineConfidence: 85 },
+            { name: "Summer Pockets REFLECTION BLUE", engine: "siglus", engineConfidence: 72 },
+            { name: "ATRI -My Dear Moments-", engine: "unity", engineConfidence: 90 },
+          ].map((item, index) => ({
+            name: item.name,
+            path: `${base}\\${item.name}`,
+            executables: [`${item.name}.exe`, "Game.exe"],
+            engine: item.engine,
+            engineConfidence: item.engineConfidence,
+            alreadyImported: index === 2,
+          }));
+        },
+        build_game_inputs: (args) =>
+          ((args && args.candidates) || []).map((c) => ({
+            title: c.name,
+            path: c.path,
+            executable: (c.executables && c.executables[0]) || null,
+            engine: c.engine,
+            engineConfidence: c.engineConfidence,
+          })),
+        import_games: (args) => ((args && args.inputs) || []).map((_, i) => 900 + i),
         get_settings: () => settings,
+        set_setting: (args) => {
+          if (args && args.key) settings[args.key] = String(args.value);
+          return null;
+        },
+        set_settings: (args) => {
+          if (args && args.values) Object.assign(settings, args.values);
+          return null;
+        },
+        reset_settings: () => settings,
         app_info: () => appInfo,
         storage_info: () => storage,
         stats_overview: () => overview,

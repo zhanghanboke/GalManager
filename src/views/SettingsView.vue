@@ -366,10 +366,22 @@ onMounted(async () => {
                   />
                 </template>
                 <template v-else>
-                  <span @click="editingTag = tag.id; tagDraft = tag.name">{{ tag.name }}</span>
-                  <span class="opacity-55">{{ tag.gameCount }}</span>
-                  <button class="opacity-0 transition group-hover:opacity-100" @click="removeTag(tag.id, tag.name)">
-                    <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+                  <button
+                    class="text-[11.5px]"
+                    :aria-label="`重命名标签 ${tag.name}`"
+                    :title="`重命名「${tag.name}」`"
+                    @click="editingTag = tag.id; tagDraft = tag.name"
+                  >
+                    {{ tag.name }}
+                  </button>
+                  <span class="opacity-55" aria-hidden="true">{{ tag.gameCount }}</span>
+                  <button
+                    class="opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 group-focus-within:opacity-100"
+                    :aria-label="`删除标签 ${tag.name}`"
+                    :title="`删除标签「${tag.name}」`"
+                    @click="removeTag(tag.id, tag.name)"
+                  >
+                    <svg width="8" height="8" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                       <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                     </svg>
                   </button>

@@ -1,16 +1,26 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { open } from "@tauri-apps/plugin-dialog";
 import BaseModal from "./BaseModal.vue";
 import { libraryApi, scanApi, type GameInput, type ScanCandidate } from "../api";
 import { useLibraryStore } from "../stores/library";
 import { errorText, toast } from "../utils/toast";
 
+const props = withDefaults(
+  defineProps<{
+    /** 由拖拽导入等场景预填的根目录；有值时打开即自动扫描 */
+    initialPaths?: string[];
+  }>(),
+  { initialPaths: () => [] },
+);
+
 const emit = defineEmits<{ close: []; done: [] }>();
 
 const library = useLibraryStore();
 
 const root = ref("");
+/** 额外根目录（拖入多个文件夹时，除第一个外都放这里） */
+const extraRoots = ref<string[]>([]);
 const maxDepth = ref(3);
 const mode = ref<"executable" | "first_level">("executable");
 const detectEngine = ref(true);
@@ -27,13 +37,31 @@ const importable = computed(() =>
   candidates.value.filter((c) => checked.value.has(c.path)),
 );
 
+/** 参与扫描的全部根目录（手动输入的 + 拖入的） */
+const allRoots = computed(() =>
+  [...new Set([root.value, ...extraRoots.value].map((r) => r.trim()).filter(Boolean))],
+);
+
+onMounted(() => {
+  const paths = props.initialPaths.map((p) => p.trim()).filter(Boolean);
+  if (!paths.length) return;
+  root.value = paths[0];
+  extraRoots.value = paths.slice(1);
+  void runScan();
+});
+
 async function pickFolder() {
   const selected = await open({ directory: true, multiple: false, title: "选择游戏根目录" });
   if (typeof selected === "string") root.value = selected;
 }
 
+function removeExtraRoot(path: string) {
+  extraRoots.value = extraRoots.value.filter((p) => p !== path);
+}
+
 async function runScan() {
-  if (!root.value) {
+  const roots = allRoots.value;
+  if (!roots.length) {
     toast.warn("请先选择要扫描的文件夹");
     return;
   }
@@ -41,13 +69,25 @@ async function runScan() {
   candidates.value = [];
   checked.value = new Set();
   try {
-    const result = await scanApi.scan({
-      root: root.value,
-      maxDepth: maxDepth.value,
-      mode: mode.value,
-      detectExecutables: true,
-      detectEngine: detectEngine.value,
+    // 多个根目录并发扫描后合并；按路径去重，避免同一游戏出现两条
+    const batches = await Promise.all(
+      roots.map((r) =>
+        scanApi.scan({
+          root: r,
+          maxDepth: maxDepth.value,
+          mode: mode.value,
+          detectExecutables: true,
+          detectEngine: detectEngine.value,
+        }),
+      ),
+    );
+    const seen = new Set<string>();
+    const result = batches.flat().filter((c) => {
+      if (seen.has(c.path)) return false;
+      seen.add(c.path);
+      return true;
     });
+
     candidates.value = result;
     scanned.value = true;
     // 默认勾选「未导入过」的项
@@ -55,7 +95,11 @@ async function runScan() {
       result.filter((c) => !c.alreadyImported).map((c) => c.path),
     );
     if (!result.length) {
-      toast.info("该目录下没有发现游戏，试试调整扫描模式或加大深度");
+      toast.info(
+        roots.length > 1
+          ? "这些文件夹里没有发现游戏，试试调整扫描模式或加大深度"
+          : "该目录下没有发现游戏，试试调整扫描模式或加大深度",
+      );
     } else {
       toast.success(`发现 ${result.length} 个候选，已默认勾选可导入项`);
     }
@@ -124,15 +168,38 @@ const engineBadge = (candidate: ScanCandidate) =>
           <input
             v-model="root"
             class="field flex-1"
-            placeholder="例如 D:\Games\Galgame"
+            aria-label="游戏根目录"
+            placeholder="例如 D:\Games\Galgame，或直接把文件夹拖进窗口"
             @keydown.enter="runScan"
           />
           <button class="btn btn-ghost" @click="pickFolder">
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M1.5 4a1.5 1.5 0 011.5-1.5h2.4l1.2 1.5H11A1.5 1.5 0 0112.5 5.5v4A1.5 1.5 0 0111 11H3a1.5 1.5 0 01-1.5-1.5z" stroke="currentColor" stroke-width="1.3" />
             </svg>
             浏览
           </button>
+        </div>
+
+        <!-- 拖入的额外目录 -->
+        <div v-if="extraRoots.length" class="mt-2 flex flex-wrap items-center gap-1.5">
+          <span class="text-[11.5px] text-ink-3">另外还有 {{ extraRoots.length }} 个拖入的目录：</span>
+          <span
+            v-for="extra in extraRoots"
+            :key="extra"
+            class="chip max-w-[280px] gap-1.5"
+            :title="extra"
+          >
+            <span class="truncate">{{ extra }}</span>
+            <button
+              class="shrink-0 opacity-60 transition hover:opacity-100"
+              :aria-label="`移除目录 ${extra}`"
+              @click="removeExtraRoot(extra)"
+            >
+              <svg width="8" height="8" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </button>
+          </span>
         </div>
       </div>
 
@@ -184,7 +251,13 @@ const engineBadge = (candidate: ScanCandidate) =>
       <div class="flex items-center gap-2">
         <button class="btn btn-primary" :disabled="scanning" @click="runScan">
           <span v-if="scanning" class="anim-spin h-3.5 w-3.5 rounded-full border-2 border-white/30 border-t-white" />
-          {{ scanning ? "正在扫描…" : "开始扫描" }}
+          {{
+            scanning
+              ? "正在扫描…"
+              : allRoots.length > 1
+                ? `开始扫描（${allRoots.length} 个目录）`
+                : "开始扫描"
+          }}
         </button>
         <span v-if="scanned" class="text-[12px] text-ink-3">
           共 {{ candidates.length }} 个候选，已选 {{ checked.size }} 个

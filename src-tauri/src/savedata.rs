@@ -487,7 +487,10 @@ pub struct RestoreOptions {
     pub archive_path: String,
     /// 目标目录（通常为探测到的存档目录）
     pub target_path: String,
-    /// 还原前是否把现有存档另存为 `.before_restore_<时间戳>` 备份
+    /// 还原前是否把现有存档另存为 `.before_restore_<时间戳>` 备份。
+    ///
+    /// 还原是**完全还原**：会先清空目标目录再解压归档，以保证结果精确等于备份时刻的状态。
+    /// 因此当目标目录非空时，本项必须为 `true`，否则直接报错拒绝执行，避免误删。
     #[serde(default = "default_true")]
     pub backup_existing: bool,
 }
@@ -504,7 +507,10 @@ pub struct RestoreOutcome {
     pub target_path: String,
 }
 
-/// 从归档还原存档到目标目录。
+/// 从归档**完全还原**存档到目标目录。
+///
+/// 语义是「让目标目录精确回到备份时刻」：先按需留安全备份，再清空目标目录，
+/// 最后解压归档。若目标目录非空且未开启安全备份，则拒绝执行。
 pub fn restore(options: &RestoreOptions) -> AppResult<RestoreOutcome> {
     let archive_path = PathBuf::from(&options.archive_path);
     if !archive_path.is_file() {
@@ -520,9 +526,12 @@ pub fn restore(options: &RestoreOptions) -> AppResult<RestoreOutcome> {
 
     // 安全兜底：还原前把目标目录整体另存一份
     let mut safety_backup = None;
-    if options.backup_existing && target.is_dir() {
+    let mut target_had_content = false;
+    if target.is_dir() {
         let (count, _) = measure_dir(&target);
-        if count > 0 {
+        target_had_content = count > 0;
+
+        if options.backup_existing && count > 0 {
             let stamp = chrono::Local::now().format("%Y%m%d_%H%M%S").to_string();
             let sibling = target.with_file_name(format!(
                 "{}.before_restore_{}",
@@ -540,6 +549,22 @@ pub fn restore(options: &RestoreOptions) -> AppResult<RestoreOutcome> {
             );
             safety_backup = Some(sibling.to_string_lossy().to_string());
         }
+    }
+
+    // 「完全还原」：先清空目标目录再解压。
+    // 若只做覆盖式写入，归档里没有、而目标里仍存在的文件会残留
+    // （例如备份之后新增的存档槽位），用户就无法真正回退到备份时刻的状态。
+    if target_had_content {
+        if safety_backup.is_none() {
+            // 没有安全备份却要清空一个非空目录，风险太高，直接拒绝
+            return Err(AppError::msg(format!(
+                "目标目录非空（{}），完全还原会先清空该目录，因此必须先做安全备份。\
+                 请开启「还原前自动备份」后重试。",
+                target.display()
+            )));
+        }
+        clear_dir_contents(&target)?;
+        log::info!("已清空目标目录以执行完全还原: {}", target.display());
     }
 
     std::fs::create_dir_all(&target)?;
@@ -594,6 +619,22 @@ pub fn restore(options: &RestoreOptions) -> AppResult<RestoreOutcome> {
     })
 }
 
+/// 清空目录内的所有条目，但保留目录本身。
+///
+/// 用于「完全还原」前抹掉旧存档。调用方必须已确保做过安全备份。
+fn clear_dir_contents(dir: &Path) -> AppResult<()> {
+    for entry in std::fs::read_dir(dir)? {
+        let entry = entry?;
+        let path = entry.path();
+        if entry.file_type()?.is_dir() {
+            std::fs::remove_dir_all(&path)?;
+        } else {
+            std::fs::remove_file(&path)?;
+        }
+    }
+    Ok(())
+}
+
 fn copy_dir_recursive(from: &Path, to: &Path) -> AppResult<()> {
     std::fs::create_dir_all(to)?;
     for entry in std::fs::read_dir(from)? {
@@ -625,4 +666,72 @@ pub fn inspect_archive(archive_path: &Path) -> AppResult<Vec<(String, i64)>> {
         }
     }
     Ok(items)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn temp_dir(tag: &str) -> PathBuf {
+        let dir = std::env::temp_dir().join(format!(
+            "galmanager_test_{tag}_{}",
+            std::process::id()
+        ));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    #[test]
+    fn expand_env_replaces_known_variable() {
+        std::env::set_var("GALMANAGER_TEST_VAR", "hello");
+        assert_eq!(expand_env("%GALMANAGER_TEST_VAR%/x"), "hello/x");
+    }
+
+    #[test]
+    fn expand_env_keeps_unknown_placeholder() {
+        assert_eq!(expand_env("%GALMANAGER_NOPE%/x"), "%GALMANAGER_NOPE%/x");
+        assert_eq!(expand_env("no placeholder"), "no placeholder");
+    }
+
+    /// 完全还原依赖这个函数清空旧存档；必须递归删子目录，且不能删掉目录本身。
+    #[test]
+    fn clear_dir_contents_removes_entries_but_keeps_dir() {
+        let dir = temp_dir("clear");
+        std::fs::write(dir.join("save001.dat"), b"a").unwrap();
+        std::fs::create_dir_all(dir.join("sub/deep")).unwrap();
+        std::fs::write(dir.join("sub/deep/save002.dat"), b"b").unwrap();
+
+        clear_dir_contents(&dir).unwrap();
+
+        assert!(dir.is_dir(), "目录本身必须保留");
+        assert_eq!(std::fs::read_dir(&dir).unwrap().count(), 0);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn clear_dir_contents_on_empty_dir_is_ok() {
+        let dir = temp_dir("clear_empty");
+        clear_dir_contents(&dir).unwrap();
+        assert!(dir.is_dir());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn measure_dir_counts_files_and_bytes() {
+        let dir = temp_dir("measure");
+        std::fs::write(dir.join("a.dat"), b"12345").unwrap();
+        std::fs::create_dir_all(dir.join("s")).unwrap();
+        std::fs::write(dir.join("s/b.dat"), b"67").unwrap();
+
+        let (count, size) = measure_dir(&dir);
+        assert_eq!(count, 2);
+        assert_eq!(size, 7);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn measure_dir_on_missing_path_is_zero() {
+        assert_eq!(measure_dir(Path::new("Z:/definitely/not/here")), (0, 0));
+    }
 }

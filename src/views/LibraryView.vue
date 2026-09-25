@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import GameCard from "../components/GameCard.vue";
+import GameTable from "../components/GameTable.vue";
 import ScanDialog from "../components/ScanDialog.vue";
 import GameEditDialog from "../components/GameEditDialog.vue";
 import BatchBar from "../components/BatchBar.vue";
@@ -11,6 +12,7 @@ import { launchApi, type Game, type PlayStatus } from "../api";
 import { useLibraryStore } from "../stores/library";
 import { useSettingsStore } from "../stores/settings";
 import { confirmDialog } from "../composables/useConfirm";
+import { pendingDropPaths } from "../composables/useDropImport";
 import { errorText, toast } from "../utils/toast";
 import { STATUS_COLORS, STATUS_LABELS, debounce } from "../utils/format";
 
@@ -19,8 +21,27 @@ const settings = useSettingsStore();
 const router = useRouter();
 
 const scanOpen = ref(false);
+/** 由拖拽导入预填的根目录；关闭对话框时清空 */
+const dropPaths = ref<string[]>([]);
 const editing = ref<Game | null>(null);
 const menu = ref<{ game: Game; x: number; y: number } | null>(null);
+
+// 消费 App.vue 收到的拖入路径，直接带路径打开扫描对话框
+watch(
+  pendingDropPaths,
+  (paths) => {
+    if (!paths.length) return;
+    dropPaths.value = [...paths];
+    pendingDropPaths.value = [];
+    scanOpen.value = true;
+  },
+  { immediate: true },
+);
+
+function closeScan() {
+  scanOpen.value = false;
+  dropPaths.value = [];
+}
 
 const sortOptions = [
   { value: "title", label: "名称" },
@@ -58,6 +79,35 @@ function toggleStatus(status: PlayStatus) {
 
 function changeSort(value: string) {
   void library.setFilter({ sortBy: value, sortDesc: value === "created" });
+}
+
+/** 列表视图点表头：同一列则切换升降序，否则换列 */
+function onTableSort(value: string) {
+  if (library.filter.sortBy === value) {
+    void library.setFilter({ sortDesc: !library.filter.sortDesc });
+  } else {
+    changeSort(value);
+  }
+}
+
+/** 列表视图的全选 / 单选（-1 表示表头全选） */
+function onTableSelect(id: number) {
+  if (id === -1) {
+    const allSelected =
+      library.games.length > 0 && library.games.every((g) => library.selectedIds.includes(g.id));
+    if (allSelected) library.clearSelection();
+    else library.selectAll();
+    return;
+  }
+  library.toggleSelected(id);
+}
+
+function setViewMode(mode: "grid" | "list") {
+  void settings.set("view_mode", mode);
+}
+
+function openDetail(game: Game) {
+  router.push(`/game/${game.id}`);
 }
 
 async function handleLaunch(game: Game) {
@@ -133,7 +183,9 @@ onUnmounted(() => {
           <input
             v-model="searchInput"
             class="field pl-8"
-            placeholder="搜索游戏名、开发商或路径…"
+            type="search"
+            aria-label="搜索游戏"
+            placeholder="搜索游戏名、拼音首字母或开发商…"
             @input="applySearch"
           />
         </div>
@@ -150,6 +202,7 @@ onUnmounted(() => {
 
         <button
           class="btn btn-ghost px-2.5"
+          :aria-label="library.filter.sortDesc ? '切换为升序排列' : '切换为降序排列'"
           :title="library.filter.sortDesc ? '当前：降序' : '当前：升序'"
           @click="library.setFilter({ sortDesc: !library.filter.sortDesc })"
         >
@@ -165,10 +218,52 @@ onUnmounted(() => {
           </svg>
         </button>
 
+        <!-- 视图切换：封面墙 / 列表 -->
+        <div
+          class="flex items-center gap-0.5 rounded-lg border border-line-soft bg-surface-2/60 p-0.5"
+          role="group"
+          aria-label="切换呈现方式"
+        >
+          <button
+            class="rounded-md p-1.5 transition"
+            :class="settings.viewMode === 'grid' ? 'bg-surface-3 text-accent' : 'text-ink-3 hover:text-ink'"
+            :aria-pressed="settings.viewMode === 'grid'"
+            aria-label="封面墙视图"
+            title="封面墙视图"
+            @click="setViewMode('grid')"
+          >
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <rect x="1" y="1" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.4" />
+              <rect x="8" y="1" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.4" />
+              <rect x="1" y="8" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.4" />
+              <rect x="8" y="8" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.4" />
+            </svg>
+          </button>
+          <button
+            class="rounded-md p-1.5 transition"
+            :class="settings.viewMode === 'list' ? 'bg-surface-3 text-accent' : 'text-ink-3 hover:text-ink'"
+            :aria-pressed="settings.viewMode === 'list'"
+            aria-label="列表视图"
+            title="列表视图"
+            @click="setViewMode('list')"
+          >
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path
+                d="M1.5 3h11M1.5 7h11M1.5 11h11"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+
         <div class="ml-auto flex items-center gap-2">
           <button
             class="btn btn-ghost"
             :class="library.selectionMode ? 'border-accent/50 text-accent' : ''"
+            :aria-pressed="library.selectionMode"
+            aria-label="多选模式"
             title="多选模式"
             @click="library.toggleSelectionMode()"
           >
@@ -254,7 +349,7 @@ onUnmounted(() => {
         "
       />
 
-      <div v-else class="grid gap-x-3.5 gap-y-5" :style="gridStyle">
+      <div v-else-if="settings.viewMode === 'grid'" class="grid gap-x-3.5 gap-y-5" :style="gridStyle">
         <GameCard
           v-for="(game, index) in library.games"
           :key="game.id"
@@ -263,12 +358,27 @@ onUnmounted(() => {
           :running="settings.runningIds.has(game.id)"
           :selection-mode="library.selectionMode"
           :selected="library.selectedIds.includes(game.id)"
-          @open="router.push(`/game/${game.id}`)"
+          @open="openDetail"
           @launch="handleLaunch"
           @select="library.toggleSelected(game.id)"
           @contextmenu="menu = $event"
         />
       </div>
+
+      <GameTable
+        v-else
+        :games="library.games"
+        :running-ids="settings.runningIds"
+        :selection-mode="library.selectionMode"
+        :selected-ids="library.selectedIds"
+        :sort-by="library.filter.sortBy ?? 'title'"
+        :sort-desc="library.filter.sortDesc ?? false"
+        @open="openDetail"
+        @launch="handleLaunch"
+        @select="onTableSelect"
+        @contextmenu="menu = $event"
+        @sort="onTableSort"
+      />
 
       <div v-if="library.loading" class="flex justify-center py-8">
         <span class="anim-spin h-5 w-5 rounded-full border-2 border-line border-t-accent" />
@@ -291,7 +401,12 @@ onUnmounted(() => {
       @open-folder="launchApi.openGameFolder(menu!.game.id).catch((e) => toast.error(errorText(e)))"
     />
 
-    <ScanDialog v-if="scanOpen" @close="scanOpen = false" @done="library.refresh()" />
+    <ScanDialog
+      v-if="scanOpen"
+      :initial-paths="dropPaths"
+      @close="closeScan"
+      @done="library.refresh()"
+    />
 
     <GameEditDialog
       v-if="editing"

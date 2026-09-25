@@ -23,6 +23,10 @@ export const useSettingsStore = defineStore("settings", () => {
   const running = ref<RunningGame[]>([]);
 
   const gridSize = computed(() => values.value.grid_size ?? "md");
+  /** 游戏库呈现方式：grid = 封面墙，list = 紧凑表格 */
+  const viewMode = computed<"grid" | "list">(() =>
+    values.value.view_mode === "list" ? "list" : "grid",
+  );
   const minimizeToTray = computed(() => values.value.minimize_to_tray !== "false");
   const closeToTray = computed(() => values.value.close_to_tray !== "false");
 
@@ -80,6 +84,7 @@ export const useSettingsStore = defineStore("settings", () => {
     running,
     runningIds,
     gridSize,
+    viewMode,
     minimizeToTray,
     closeToTray,
     load,

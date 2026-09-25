@@ -19,6 +19,7 @@ mod models;
 mod paths;
 mod savedata;
 mod scanner;
+mod search;
 mod tray;
 
 use db::Db;
