@@ -51,7 +51,7 @@ onMounted(() => {
           <h1 class="text-[24px] font-semibold tracking-tight text-ink">GalManager</h1>
           <p class="mt-1 text-[14px] text-ink-3">
             Galgame 专属桌面管理器 · 版本
-            <span class="text-accent">v{{ settings.appInfo?.version ?? "0.1.0" }}</span>
+            <span class="text-accent">v{{ settings.appInfo?.version ?? "0.2.0" }}</span>
           </p>
           <p class="mt-3 max-w-[560px] text-[14px] leading-relaxed text-ink-2">
             为 Galgame 玩家打造的一站式本地管理器。把散落在各个硬盘角落的视觉小说整理成一座

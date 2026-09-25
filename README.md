@@ -233,8 +233,8 @@ pnpm tauri build
 
 | 格式 | 路径 | 体积 |
 | --- | --- | --- |
-| NSIS 安装程序（.exe） | `bundle/nsis/GalManager_0.1.0_x64-setup.exe` | 约 2.2 MB |
-| MSI 安装包 | `bundle/msi/GalManager_0.1.0_x64_zh-CN.msi` | 约 3.0 MB |
+| NSIS 安装程序（.exe） | `bundle/nsis/GalManager_0.2.0_x64-setup.exe` | 约 2.2 MB |
+| MSI 安装包 | `bundle/msi/GalManager_0.2.0_x64_zh-CN.msi` | 约 3.0 MB |
 | 免安装可执行文件 | `target/release/GalManager.exe` | 约 5.6 MB |
 
 安装向导支持简体中文 / English 语言选择，默认按「当前用户」安装，无需管理员权限。

@@ -1,6 +1,6 @@
 [package]
 name = "galmanager"
-version = "0.1.0"
+version = "0.2.0"
 description = "Galgame 专属桌面管理器"
 authors = ["GalManager"]
 edition = "2021"
