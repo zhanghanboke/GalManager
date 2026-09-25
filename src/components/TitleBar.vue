@@ -83,21 +83,21 @@ function close() {
 
 <template>
   <header
-    class="titlebar relative z-30 flex h-[38px] shrink-0 items-center select-none"
+    class="titlebar relative z-30 flex h-[44px] shrink-0 items-center select-none"
     @mousedown="onTitlebarMouseDown"
     @contextmenu.prevent
   >
     <!-- 品牌 -->
     <div class="flex items-center gap-2.5 pl-3.5">
       <div
-        class="flex h-[22px] w-[22px] items-center justify-center rounded-[7px] bg-gradient-to-br from-accent to-clay text-[12px] font-bold text-[#2a1806] shadow-sm shadow-accent/30"
+        class="flex h-[26px] w-[26px] items-center justify-center rounded-[8px] bg-gradient-to-br from-accent to-clay text-[14px] font-bold text-[#2a1806] shadow-sm shadow-accent/30"
       >
         G
       </div>
-      <span class="text-[12.5px] font-semibold tracking-tight text-ink">GalManager</span>
+      <span class="text-[15px] font-semibold tracking-tight text-ink">GalManager</span>
       <template v-if="pageTitle">
         <span class="text-ink-3/40">/</span>
-        <span class="text-[11.5px] text-ink-3">{{ pageTitle }}</span>
+        <span class="text-[13px] text-ink-3">{{ pageTitle }}</span>
       </template>
     </div>
 

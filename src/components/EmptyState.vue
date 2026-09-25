@@ -18,16 +18,16 @@ const emit = defineEmits<{ add: []; clear: [] }>();
     </div>
 
     <template v-if="hasFilter">
-      <h3 class="text-[14px] font-medium text-ink">没有匹配的游戏</h3>
-      <p class="mt-1.5 max-w-[320px] text-[12.5px] leading-relaxed text-ink-3">
+      <h3 class="text-[15.5px] font-medium text-ink">没有匹配的游戏</h3>
+      <p class="mt-1.5 max-w-[320px] text-[14px] leading-relaxed text-ink-3">
         试试换个关键词，或者清除当前的筛选条件。
       </p>
       <button class="btn btn-ghost mt-4" @click="emit('clear')">清除筛选</button>
     </template>
 
     <template v-else>
-      <h3 class="text-[14px] font-medium text-ink">游戏库还是空的</h3>
-      <p class="mt-1.5 max-w-[340px] text-[12.5px] leading-relaxed text-ink-3">
+      <h3 class="text-[15.5px] font-medium text-ink">游戏库还是空的</h3>
+      <p class="mt-1.5 max-w-[340px] text-[14px] leading-relaxed text-ink-3">
         扫描本地文件夹，GalManager 会自动识别游戏目录、启动程序与引擎类型。
       </p>
       <button class="btn btn-primary mt-4" @click="emit('add')">

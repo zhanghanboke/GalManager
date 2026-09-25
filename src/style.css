@@ -57,7 +57,7 @@ body {
   background: var(--color-base);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   /* 桌面应用：禁止文本选择，输入框除外 */
@@ -132,10 +132,10 @@ progress {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 34px;
-  padding: 0 14px;
-  border-radius: 9px;
-  font-size: 13px;
+  height: 37px;
+  padding: 0 15px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
@@ -186,13 +186,13 @@ progress {
 
 @utility field {
   width: 100%;
-  height: 34px;
-  padding: 0 11px;
-  border-radius: 9px;
+  height: 37px;
+  padding: 0 12px;
+  border-radius: 10px;
   background: var(--color-surface-2);
   border: 1px solid var(--color-line);
   color: var(--color-ink);
-  font-size: 13px;
+  font-size: 14px;
   outline: none;
   transition: border-color 0.16s ease, background 0.16s ease;
 }
@@ -213,7 +213,7 @@ textarea.field {
 
 @utility label {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--color-ink-3);
   margin-bottom: 6px;
@@ -224,10 +224,10 @@ textarea.field {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  height: 22px;
-  padding: 0 9px;
-  border-radius: 6px;
-  font-size: 11.5px;
+  height: 25px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 12.5px;
   font-weight: 500;
   background: var(--color-surface-3);
   color: var(--color-ink-2);

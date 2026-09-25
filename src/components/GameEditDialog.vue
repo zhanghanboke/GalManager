@@ -182,17 +182,17 @@ async function submit() {
             alt="封面预览"
             class="h-full w-full object-cover"
           />
-          <div v-else class="flex h-full items-center justify-center text-[11.5px] text-ink-3">
+          <div v-else class="flex h-full items-center justify-center text-[13px] text-ink-3">
             未设置封面
           </div>
           <button
-            class="absolute inset-x-0 bottom-0 bg-black/65 py-2 text-[11.5px] text-white opacity-0 transition group-hover:opacity-100"
+            class="absolute inset-x-0 bottom-0 bg-black/65 py-2 text-[13px] text-white opacity-0 transition group-hover:opacity-100"
             @click="pickCover"
           >
             选择图片
           </button>
         </div>
-        <button class="btn btn-ghost mt-2 w-full text-[12px]" @click="pickCover">更换封面</button>
+        <button class="btn btn-ghost mt-2 w-full text-[13.5px]" @click="pickCover">更换封面</button>
       </div>
 
       <!-- 表单 -->
@@ -286,14 +286,14 @@ async function submit() {
         </div>
 
         <div class="rounded-xl border border-line bg-surface-2 p-3">
-          <label class="flex cursor-pointer items-center gap-2 text-[12.5px] text-ink">
+          <label class="flex cursor-pointer items-center gap-2 text-[14px] text-ink">
             <input v-model="form.leLaunch" type="checkbox" />
             使用 Locale Emulator 转区启动
           </label>
           <div v-if="form.leLaunch" class="mt-2.5">
             <label class="label">转区区域</label>
             <input v-model="form.leLocale" class="field" placeholder="ja-JP" />
-            <p class="mt-1.5 text-[11px] text-ink-3">
+            <p class="mt-1.5 text-[12.5px] text-ink-3">
               LE 的 LEProc.exe 需在「设置 → 启动」中配置路径
             </p>
           </div>

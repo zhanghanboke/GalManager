@@ -216,7 +216,7 @@ const engineBadge = (candidate: ScanCandidate) =>
 
         <!-- 拖入的额外目录 -->
         <div v-if="extraRoots.length" class="mt-2 flex flex-wrap items-center gap-1.5">
-          <span class="text-[11.5px] text-ink-3">另外还有 {{ extraRoots.length }} 个拖入的目录：</span>
+          <span class="text-[13px] text-ink-3">另外还有 {{ extraRoots.length }} 个拖入的目录：</span>
           <span
             v-for="extra in extraRoots"
             :key="extra"
@@ -256,7 +256,7 @@ const engineBadge = (candidate: ScanCandidate) =>
               按一级目录
             </button>
           </div>
-          <p class="mt-1.5 text-[11.5px] leading-relaxed text-ink-3">
+          <p class="mt-1.5 text-[13px] leading-relaxed text-ink-3">
             {{
               mode === "executable"
                 ? "递归查找含 .exe 的目录，每个目录视为一个游戏，适合目录结构规整的库"
@@ -275,7 +275,7 @@ const engineBadge = (candidate: ScanCandidate) =>
             class="w-full "
             :disabled="mode === 'first_level'"
           />
-          <label class="mt-2 flex cursor-pointer items-center gap-2 text-[12.5px] text-ink-2">
+          <label class="mt-2 flex cursor-pointer items-center gap-2 text-[14px] text-ink-2">
             <input v-model="detectEngine" type="checkbox" />
             识别引擎类型（Kirikiri / Ren'Py / Unity / RPG Maker …）
           </label>
@@ -293,7 +293,7 @@ const engineBadge = (candidate: ScanCandidate) =>
                 : "开始扫描"
           }}
         </button>
-        <span v-if="scanned" class="text-[12px] text-ink-3">
+        <span v-if="scanned" class="text-[13.5px] text-ink-3">
           共 {{ candidates.length }} 个候选，已选 {{ checked.size }} 个
         </span>
       </div>
@@ -302,7 +302,7 @@ const engineBadge = (candidate: ScanCandidate) =>
     <!-- 结果列表 -->
     <section v-if="scanned && candidates.length" class="mt-4">
       <div class="mb-2 flex flex-wrap items-center gap-3">
-        <label class="flex cursor-pointer items-center gap-2 text-[12px] text-ink-2">
+        <label class="flex cursor-pointer items-center gap-2 text-[13.5px] text-ink-2">
           <input
             type="checkbox"
             :checked="checked.size > 0 && checked.size === autoImportable.length"
@@ -310,7 +310,7 @@ const engineBadge = (candidate: ScanCandidate) =>
           />
           全选可导入项
         </label>
-        <span v-if="duplicateCount" class="text-[11.5px] text-amber">
+        <span v-if="duplicateCount" class="text-[13px] text-amber">
           {{ duplicateCount }} 个疑似重复已默认不勾选，请核对后再决定
         </span>
       </div>
@@ -338,20 +338,20 @@ const engineBadge = (candidate: ScanCandidate) =>
               @change="toggle(candidate.path)"
             />
             <div class="min-w-0 flex-1">
-              <p class="truncate text-[12.5px] font-medium text-ink">
+              <p class="truncate text-[14px] font-medium text-ink">
                 {{ candidate.name }}
-                <span v-if="candidate.alreadyImported" class="ml-1.5 text-[11px] font-normal text-ink-3">
+                <span v-if="candidate.alreadyImported" class="ml-1.5 text-[12.5px] font-normal text-ink-3">
                   （已在库中）
                 </span>
                 <span
                   v-else-if="candidate.possibleDuplicate"
-                  class="ml-1.5 text-[11px] font-normal text-amber"
+                  class="ml-1.5 text-[12.5px] font-normal text-amber"
                   :title="`库中已有《${candidate.possibleDuplicate.title}》\n目录：${candidate.possibleDuplicate.path ?? '（未记录）'}`"
                 >
                   （可能重复：库中已有《{{ candidate.possibleDuplicate.title }}》）
                 </span>
               </p>
-              <p class="truncate text-[11px] text-ink-3" :title="candidate.path">
+              <p class="truncate text-[12.5px] text-ink-3" :title="candidate.path">
                 {{ candidate.path }}
               </p>
             </div>
@@ -382,13 +382,13 @@ const engineBadge = (candidate: ScanCandidate) =>
 
     <template #footer>
       <div v-if="candidates.length" class="mr-auto flex items-center gap-3">
-        <select v-model="targetCategory" class="field h-8 w-[130px] cursor-pointer text-[12px]">
+        <select v-model="targetCategory" class="field h-8 w-[130px] cursor-pointer text-[13.5px]">
           <option value="">导入到：未分类</option>
           <option v-for="c in library.categories" :key="c.id" :value="c.id">
             导入到：{{ c.name }}
           </option>
         </select>
-        <label class="flex cursor-pointer items-center gap-1.5 text-[12px] text-ink-2">
+        <label class="flex cursor-pointer items-center gap-1.5 text-[13.5px] text-ink-2">
           <input v-model="useLocaleEmulator" type="checkbox" />
           默认转区启动
         </label>

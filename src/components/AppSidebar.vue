@@ -68,13 +68,13 @@ async function removeCategory(id: number, name: string) {
 </script>
 
 <template>
-  <aside class="flex w-[228px] shrink-0 flex-col border-r border-line-soft bg-surface">
+  <aside class="flex w-[248px] shrink-0 flex-col border-r border-line-soft bg-surface">
     <nav class="px-2.5 pt-3">
       <RouterLink
         v-for="item in navItems"
         :key="item.name"
         :to="item.to"
-        class="group relative mb-0.5 flex h-9 items-center gap-2.5 rounded-[9px] px-2.5 text-[13px] transition"
+        class="group relative mb-0.5 flex h-10 items-center gap-2.5 rounded-[10px] px-3 text-[14.5px] transition"
         :class="
           route.name === item.name
             ? 'bg-surface-3 font-medium text-ink'
@@ -125,7 +125,7 @@ async function removeCategory(id: number, name: string) {
           </template>
         </svg>
         <span class="flex-1">{{ item.label }}</span>
-        <span v-if="item.name === 'library'" class="text-[11px] text-ink-3">
+        <span v-if="item.name === 'library'" class="text-[12.5px] text-ink-3">
           {{ library.counts.total }}
         </span>
       </RouterLink>
@@ -136,7 +136,7 @@ async function removeCategory(id: number, name: string) {
     <!-- 分类 -->
     <div class="flex min-h-0 flex-1 flex-col">
       <div class="flex items-center justify-between px-4 pb-1.5">
-        <span class="text-[10.5px] font-semibold tracking-widest text-ink-3 uppercase">分类</span>
+        <span class="text-[12px] font-semibold tracking-widest text-ink-3 uppercase">分类</span>
         <button
           class="flex h-5 w-5 items-center justify-center rounded-md text-ink-3 transition hover:bg-surface-3 hover:text-ink"
           title="新建分类"
@@ -151,7 +151,7 @@ async function removeCategory(id: number, name: string) {
       <form v-if="addingCategory" class="px-3 pb-1.5" @submit.prevent="submitCategory">
         <input
           v-model="newCategoryName"
-          class="field h-7 text-[12px]"
+          class="field h-7 text-[13.5px]"
           placeholder="分类名，回车确认"
           autofocus
           @blur="addingCategory = false"
@@ -160,7 +160,7 @@ async function removeCategory(id: number, name: string) {
 
       <div class="min-h-0 flex-1 scroll-y px-2.5">
         <button
-          class="mb-0.5 flex h-8 w-full items-center gap-2 rounded-lg px-2.5 text-[12.5px] transition"
+          class="mb-0.5 flex h-9 w-full items-center gap-2 rounded-lg px-3 text-[14px] transition"
           :class="
             activeCategory === null
               ? 'bg-surface-3 text-ink'
@@ -170,11 +170,11 @@ async function removeCategory(id: number, name: string) {
         >
           <span class="h-1.5 w-1.5 rounded-full bg-ink-3" />
           <span class="flex-1 text-left">全部游戏</span>
-          <span class="text-[11px] text-ink-3">{{ library.counts.total }}</span>
+          <span class="text-[12.5px] text-ink-3">{{ library.counts.total }}</span>
         </button>
 
         <button
-          class="mb-0.5 flex h-8 w-full items-center gap-2 rounded-lg px-2.5 text-[12.5px] transition"
+          class="mb-0.5 flex h-9 w-full items-center gap-2 rounded-lg px-3 text-[14px] transition"
           :class="
             activeCategory === -1
               ? 'bg-surface-3 text-ink'
@@ -184,13 +184,13 @@ async function removeCategory(id: number, name: string) {
         >
           <span class="h-1.5 w-1.5 rounded-full bg-ink-3/60" />
           <span class="flex-1 text-left">未分类</span>
-          <span class="text-[11px] text-ink-3">{{ library.counts.uncategorized }}</span>
+          <span class="text-[12.5px] text-ink-3">{{ library.counts.uncategorized }}</span>
         </button>
 
         <div
           v-for="category in library.categories"
           :key="category.id"
-          class="group mb-0.5 flex h-8 items-center rounded-lg transition"
+          class="group mb-0.5 flex h-9 items-center rounded-lg transition"
           :class="
             activeCategory === category.id
               ? 'bg-surface-3 text-ink'
@@ -198,12 +198,12 @@ async function removeCategory(id: number, name: string) {
           "
         >
           <button
-            class="flex h-full min-w-0 flex-1 items-center gap-2 px-2.5 text-[12.5px]"
+            class="flex h-full min-w-0 flex-1 items-center gap-2 px-3 text-[14px]"
             @click="selectCategory(category.id)"
           >
             <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
             <span class="flex-1 truncate text-left">{{ category.name }}</span>
-            <span class="text-[11px] text-ink-3">{{ category.gameCount }}</span>
+            <span class="text-[12.5px] text-ink-3">{{ category.gameCount }}</span>
           </button>
           <button
             class="mr-1.5 hidden h-5 w-5 shrink-0 items-center justify-center rounded-md text-ink-3 transition group-hover:flex hover:bg-base hover:text-danger"
@@ -216,19 +216,19 @@ async function removeCategory(id: number, name: string) {
           </button>
         </div>
 
-        <p v-if="!library.categories.length" class="px-2.5 py-1.5 text-[11.5px] text-ink-3">
+        <p v-if="!library.categories.length" class="px-2.5 py-1.5 text-[13px] text-ink-3">
           还没有分类，点上方 + 新建
         </p>
 
         <!-- 标签 -->
         <template v-if="library.tags.length">
           <div class="mt-4 flex items-center justify-between px-2.5 pb-1.5">
-            <span class="text-[10.5px] font-semibold tracking-widest text-ink-3 uppercase">
+            <span class="text-[12px] font-semibold tracking-widest text-ink-3 uppercase">
               标签
             </span>
             <button
               v-if="(library.filter.tags ?? []).length"
-              class="text-[10.5px] text-accent hover:underline"
+              class="text-[12px] text-accent hover:underline"
               @click="library.setFilter({ tags: [] })"
             >
               清除
@@ -265,7 +265,7 @@ async function removeCategory(id: number, name: string) {
           <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-70" />
           <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-sage" />
         </span>
-        <span class="text-[10.5px] font-semibold tracking-widest text-ink-3 uppercase">
+        <span class="text-[12px] font-semibold tracking-widest text-ink-3 uppercase">
           运行中
         </span>
       </div>
@@ -276,7 +276,7 @@ async function removeCategory(id: number, name: string) {
         class="flex items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-surface-2"
       >
         <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-sage" />
-        <span class="min-w-0 flex-1 truncate text-[12px] text-ink-2">{{ item.title }}</span>
+        <span class="min-w-0 flex-1 truncate text-[13.5px] text-ink-2">{{ item.title }}</span>
       </RouterLink>
     </div>
   </aside>

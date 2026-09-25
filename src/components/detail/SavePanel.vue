@@ -169,16 +169,16 @@ onMounted(async () => {
     <!-- 探测结果 -->
     <section class="panel p-4">
       <div class="mb-3 flex items-center gap-2.5">
-        <h3 class="text-[13px] font-semibold text-ink">存档位置</h3>
+        <h3 class="text-[14.5px] font-semibold text-ink">存档位置</h3>
         <span v-if="probe" class="chip" :class="probe.confidence >= 70 ? 'text-sage' : 'text-ink-3'">
           {{ probe.engineLabel }} · 置信度 {{ probe.confidence }}%
         </span>
-        <button class="btn btn-ghost ml-auto h-7 px-2.5 text-[12px]" :disabled="loading" @click="loadProbe">
+        <button class="btn btn-ghost ml-auto h-7 px-2.5 text-[13.5px]" :disabled="loading" @click="loadProbe">
           {{ loading ? "探测中…" : "重新探测" }}
         </button>
       </div>
 
-      <p v-if="probe && !existingCandidates.length" class="mb-3 rounded-lg bg-surface-2 p-3 text-[12px] leading-relaxed text-ink-3">
+      <p v-if="probe && !existingCandidates.length" class="mb-3 rounded-lg bg-surface-2 p-3 text-[13.5px] leading-relaxed text-ink-3">
         未自动找到已存在的存档目录。多数 Galgame 需要先启动一次并保存，才会生成存档文件；
         你也可以点击「浏览」手动指定存档位置。
       </p>
@@ -205,27 +205,27 @@ onMounted(async () => {
             :style="{ background: candidate.exists && candidate.fileCount > 0 ? '#a9bd6b' : candidate.exists ? '#e8b04b' : '#4d4033' }"
           />
           <div class="min-w-0 flex-1">
-            <p class="truncate text-[12px] text-ink">{{ candidate.path }}</p>
-            <p class="mt-0.5 text-[11px] text-ink-3">{{ candidate.source }}</p>
+            <p class="truncate text-[13.5px] text-ink">{{ candidate.path }}</p>
+            <p class="mt-0.5 text-[12.5px] text-ink-3">{{ candidate.source }}</p>
           </div>
-          <span v-if="candidate.exists" class="shrink-0 text-[11px] text-ink-3">
+          <span v-if="candidate.exists" class="shrink-0 text-[12.5px] text-ink-3">
             {{ candidate.fileCount }} 个文件 · {{ formatBytes(candidate.sizeBytes) }}
           </span>
-          <span v-else class="shrink-0 text-[11px] text-ink-3">不存在</span>
+          <span v-else class="shrink-0 text-[12.5px] text-ink-3">不存在</span>
         </button>
       </div>
 
       <div class="mt-3 flex gap-2">
-        <button class="btn btn-ghost h-7 px-2.5 text-[12px]" @click="pickFolder">浏览…</button>
+        <button class="btn btn-ghost h-7 px-2.5 text-[13.5px]" @click="pickFolder">浏览…</button>
         <button
-          class="btn btn-ghost h-7 px-2.5 text-[12px]"
+          class="btn btn-ghost h-7 px-2.5 text-[13.5px]"
           :disabled="!selectedPath"
           @click="applySavePath(selectedPath)"
         >
           记住此目录
         </button>
         <button
-          class="btn btn-ghost h-7 px-2.5 text-[12px]"
+          class="btn btn-ghost h-7 px-2.5 text-[13.5px]"
           :disabled="!selectedPath"
           @click="launchApi.openPath(selectedPath).catch((e) => toast.error(errorText(e)))"
         >
@@ -236,7 +236,7 @@ onMounted(async () => {
 
     <!-- 备份 -->
     <section class="panel p-4">
-      <h3 class="mb-3 text-[13px] font-semibold text-ink">新建备份</h3>
+      <h3 class="mb-3 text-[14.5px] font-semibold text-ink">新建备份</h3>
       <div class="grid grid-cols-[1fr_1fr_auto] gap-2.5">
         <div>
           <label class="label">槽位名称</label>
@@ -257,21 +257,21 @@ onMounted(async () => {
     <!-- 备份列表 -->
     <section class="panel overflow-hidden">
       <header class="flex items-center justify-between border-b border-line-soft px-4 py-3">
-        <h3 class="text-[13px] font-semibold text-ink">
+        <h3 class="text-[14.5px] font-semibold text-ink">
           备份槽位
           <span class="ml-1.5 font-normal text-ink-3">{{ slots.length }}</span>
         </h3>
         <div class="flex items-center gap-2">
-          <span class="text-[11.5px] text-ink-3">还原目标：</span>
+          <span class="text-[13px] text-ink-3">还原目标：</span>
           <input
             v-model="restoreTarget"
-            class="field h-7 w-[260px] text-[11.5px]"
+            class="field h-7 w-[260px] text-[13px]"
             placeholder="留空则还原到原目录"
           />
         </div>
       </header>
 
-      <div v-if="!slots.length" class="px-4 py-8 text-center text-[12px] text-ink-3">
+      <div v-if="!slots.length" class="px-4 py-8 text-center text-[13.5px] text-ink-3">
         还没有备份，先创建一个吧
       </div>
 
@@ -283,27 +283,27 @@ onMounted(async () => {
         >
           <div class="flex items-center gap-3 px-4 py-3 transition hover:bg-surface-2/50">
             <div class="min-w-0 flex-1">
-              <p class="flex items-center gap-2 text-[12.5px] font-medium text-ink">
+              <p class="flex items-center gap-2 text-[14px] font-medium text-ink">
                 {{ slot.slotName }}
                 <span v-if="slot.remark" class="font-normal text-ink-3">· {{ slot.remark }}</span>
               </p>
-              <p class="mt-0.5 truncate text-[11px] text-ink-3">
+              <p class="mt-0.5 truncate text-[12.5px] text-ink-3">
                 {{ formatDateTime(slot.createdAt) }} · {{ slot.fileCount }} 个文件 ·
                 {{ formatBytes(slot.sizeBytes) }}
               </p>
             </div>
             <div class="flex shrink-0 items-center gap-1.5">
-              <button class="btn btn-ghost h-7 px-2.5 text-[12px]" @click="inspect(slot)">
+              <button class="btn btn-ghost h-7 px-2.5 text-[13.5px]" @click="inspect(slot)">
                 {{ showInspect === slot.id ? "收起" : "查看内容" }}
               </button>
-              <button class="btn btn-ghost h-7 px-2.5 text-[12px]" @click="editRemark(slot)">
+              <button class="btn btn-ghost h-7 px-2.5 text-[13.5px]" @click="editRemark(slot)">
                 备注
               </button>
-              <button class="btn btn-primary h-7 px-2.5 text-[12px]" @click="doRestore(slot)">
+              <button class="btn btn-primary h-7 px-2.5 text-[13.5px]" @click="doRestore(slot)">
                 一键还原
               </button>
               <button
-                class="btn btn-ghost h-7 px-2.5 text-[12px] border-[#4a2a24] text-danger"
+                class="btn btn-ghost h-7 px-2.5 text-[13.5px] border-[#4a2a24] text-danger"
                 @click="doDelete(slot)"
               >
                 删除
@@ -312,12 +312,12 @@ onMounted(async () => {
           </div>
 
           <div v-if="showInspect === slot.id" class="border-t border-line-soft bg-base/40 px-4 py-3">
-            <p class="mb-2 text-[11px] text-ink-3">归档内含 {{ inspectFiles.length }} 个文件</p>
+            <p class="mb-2 text-[12.5px] text-ink-3">归档内含 {{ inspectFiles.length }} 个文件</p>
             <div class="max-h-[180px] scroll-y rounded-lg bg-surface-2 p-2.5">
               <p
                 v-for="([name, size], i) in inspectFiles.slice(0, 200)"
                 :key="i"
-                class="flex justify-between gap-3 py-0.5 font-mono text-[11px] text-ink-3"
+                class="flex justify-between gap-3 py-0.5 font-mono text-[12.5px] text-ink-3"
               >
                 <span class="truncate">{{ name }}</span>
                 <span class="shrink-0">{{ formatBytes(size) }}</span>

@@ -93,7 +93,7 @@ onUnmounted(() => {
               class="anim-spin h-6 w-6 rounded-full border-2 border-line border-t-accent"
               aria-hidden="true"
             />
-            <p class="text-[12.5px] text-ink-3">正在准备游戏库…</p>
+            <p class="text-[14px] text-ink-3">正在准备游戏库…</p>
           </div>
         </div>
 
@@ -127,8 +127,8 @@ onUnmounted(() => {
                   stroke-linejoin="round"
                 />
               </svg>
-              <p class="text-[14px] font-medium text-ink">松手即可添加游戏</p>
-              <p class="text-[12px] text-ink-3">会自动扫描文件夹并识别游戏与启动程序</p>
+              <p class="text-[15.5px] font-medium text-ink">松手即可添加游戏</p>
+              <p class="text-[13.5px] text-ink-3">会自动扫描文件夹并识别游戏与启动程序</p>
             </div>
           </div>
         </Transition>

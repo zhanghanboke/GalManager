@@ -96,7 +96,7 @@ function onContextMenu(event: MouseEvent) {
         class="flex h-full w-full items-center justify-center"
         :style="{ background: placeholder }"
       >
-        <span class="text-[42px] font-semibold text-white/25">{{ initial }}</span>
+        <span class="text-[46px] font-semibold text-white/25">{{ initial }}</span>
       </div>
 
       <!-- 顶部角标 -->
@@ -116,7 +116,7 @@ function onContextMenu(event: MouseEvent) {
           title="正在游玩"
         >
           <span class="h-1.5 w-1.5 rounded-full bg-sage" />
-          <span class="text-[9.5px] font-medium text-sage">运行中</span>
+          <span class="text-[11px] font-medium text-sage">运行中</span>
         </span>
       </div>
 
@@ -134,8 +134,8 @@ function onContextMenu(event: MouseEvent) {
       <!-- 底部状态条 -->
       <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 bg-gradient-to-t from-black/80 to-transparent px-2 pt-6 pb-1.5">
         <span class="h-1.5 w-1.5 shrink-0 rounded-full" :style="{ background: statusColor }" />
-        <span class="text-[10.5px] text-white/75">{{ statusLabel }}</span>
-        <span v-if="game.totalPlaySeconds > 0" class="ml-auto text-[10.5px] text-white/60">
+        <span class="text-[12px] text-white/75">{{ statusLabel }}</span>
+        <span v-if="game.totalPlaySeconds > 0" class="ml-auto text-[12px] text-white/60">
           {{ formatDuration(game.totalPlaySeconds) }}
         </span>
       </div>
@@ -162,10 +162,10 @@ function onContextMenu(event: MouseEvent) {
 
     <!-- 标题 -->
     <div class="mt-2 px-0.5">
-      <h3 class="line-clamp-1 text-[12.5px] font-medium text-ink" :title="game.title">
+      <h3 class="line-clamp-1 text-[14px] font-medium text-ink" :title="game.title">
         {{ game.title }}
       </h3>
-      <p v-if="game.engine" class="mt-0.5 line-clamp-1 text-[10.5px] text-ink-3">
+      <p v-if="game.engine" class="mt-0.5 line-clamp-1 text-[12px] text-ink-3">
         {{ game.developer || game.engine }}
       </p>
     </div>

@@ -15,8 +15,8 @@ function close(value: boolean) {
         @click.self="close(false)"
       >
         <div class="anim-pop w-[400px] rounded-2xl border border-line bg-surface p-5 shadow-2xl">
-          <h3 class="text-[15px] font-semibold text-ink">{{ confirmState.title }}</h3>
-          <p class="mt-2.5 text-[13px] leading-relaxed text-ink-2 whitespace-pre-line">
+          <h3 class="text-[16.5px] font-semibold text-ink">{{ confirmState.title }}</h3>
+          <p class="mt-2.5 text-[14.5px] leading-relaxed text-ink-2 whitespace-pre-line">
             {{ confirmState.message }}
           </p>
           <div class="mt-5 flex justify-end gap-2">

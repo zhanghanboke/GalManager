@@ -39,15 +39,15 @@ async function applyTags() {
       v-if="library.selectionMode"
       class="flex shrink-0 items-center gap-2 border-t border-line bg-surface px-5 py-2.5"
     >
-      <span class="text-[12.5px] text-ink-2">
+      <span class="text-[14px] text-ink-2">
         已选 <span class="font-semibold text-accent">{{ library.selectedIds.length }}</span> 个
       </span>
 
-      <button class="btn btn-ghost h-7 px-2.5 text-[12px]" @click="library.selectAll()">
+      <button class="btn btn-ghost h-7 px-2.5 text-[13.5px]" @click="library.selectAll()">
         全选
       </button>
       <button
-        class="btn btn-ghost h-7 px-2.5 text-[12px]"
+        class="btn btn-ghost h-7 px-2.5 text-[13.5px]"
         :disabled="!library.selectedIds.length"
         @click="library.clearSelection()"
       >
@@ -58,7 +58,7 @@ async function applyTags() {
 
       <!-- 分类 -->
       <select
-        class="field h-7 w-[110px] cursor-pointer text-[12px]"
+        class="field h-7 w-[110px] cursor-pointer text-[13.5px]"
         :disabled="!library.selectedIds.length"
         @change="
           (e) => {
@@ -75,7 +75,7 @@ async function applyTags() {
 
       <!-- 状态 -->
       <select
-        class="field h-7 w-[104px] cursor-pointer text-[12px]"
+        class="field h-7 w-[104px] cursor-pointer text-[13.5px]"
         :disabled="!library.selectedIds.length"
         @change="
           (e) => {
@@ -89,7 +89,7 @@ async function applyTags() {
       </select>
 
       <button
-        class="btn btn-ghost h-7 px-2.5 text-[12px]"
+        class="btn btn-ghost h-7 px-2.5 text-[13.5px]"
         :disabled="!library.selectedIds.length"
         @click="run(() => library.batchFavorite(true))"
       >
@@ -99,7 +99,7 @@ async function applyTags() {
       <template v-if="showTagInput">
         <input
           v-model="tagInput"
-          class="field h-7 w-[150px] text-[12px]"
+          class="field h-7 w-[150px] text-[13.5px]"
           placeholder="标签，逗号分隔"
           autofocus
           @keydown.enter="applyTags"
@@ -108,7 +108,7 @@ async function applyTags() {
       </template>
       <button
         v-else
-        class="btn btn-ghost h-7 px-2.5 text-[12px]"
+        class="btn btn-ghost h-7 px-2.5 text-[13.5px]"
         :disabled="!library.selectedIds.length"
         @click="showTagInput = true"
       >
@@ -116,14 +116,14 @@ async function applyTags() {
       </button>
 
       <button
-        class="btn btn-ghost h-7 px-2.5 text-[12px]"
+        class="btn btn-ghost h-7 px-2.5 text-[13.5px]"
         :disabled="library.selectedIds.length !== 1"
         @click="emit('edit')"
       >
         编辑
       </button>
 
-      <button class="btn btn-ghost ml-auto h-7 px-2.5 text-[12px]" @click="library.toggleSelectionMode(false)">
+      <button class="btn btn-ghost ml-auto h-7 px-2.5 text-[13.5px]" @click="library.toggleSelectionMode(false)">
         退出多选
       </button>
     </footer>

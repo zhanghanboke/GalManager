@@ -36,8 +36,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
           class="flex shrink-0 items-start justify-between gap-4 border-b border-line-soft px-5 py-4"
         >
           <div class="min-w-0">
-            <h2 class="truncate text-[15px] font-semibold text-ink">{{ props.title }}</h2>
-            <p v-if="props.subtitle" class="mt-0.5 truncate text-[12px] text-ink-3">
+            <h2 class="truncate text-[16.5px] font-semibold text-ink">{{ props.title }}</h2>
+            <p v-if="props.subtitle" class="mt-0.5 truncate text-[13.5px] text-ink-3">
               {{ props.subtitle }}
             </p>
           </div>

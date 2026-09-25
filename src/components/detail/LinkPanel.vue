@@ -93,7 +93,7 @@ onMounted(load);
   <div class="max-w-[1000px] space-y-4">
     <!-- 添加 -->
     <section class="panel p-4">
-      <h3 class="mb-3 text-[13px] font-semibold text-ink">收藏资源链接</h3>
+      <h3 class="mb-3 text-[14.5px] font-semibold text-ink">收藏资源链接</h3>
       <div class="grid grid-cols-[1fr_1.6fr_130px_auto] gap-2.5">
         <input v-model="title" class="field" placeholder="标题（留空则用网址）" />
         <input v-model="url" class="field" placeholder="https://…" @keydown.enter="add" />
@@ -106,7 +106,7 @@ onMounted(load);
     </section>
 
     <!-- 列表 -->
-    <div v-if="!links.length" class="panel px-4 py-10 text-center text-[12px] text-ink-3">
+    <div v-if="!links.length" class="panel px-4 py-10 text-center text-[13.5px] text-ink-3">
       还没有收藏链接。攻略 Wiki、汉化发布页、B站流程视频都可以收在这里。
     </div>
 
@@ -121,20 +121,20 @@ onMounted(load);
           :style="{ background: kindMeta(link.kind).color + '22', border: `1px solid ${kindMeta(link.kind).color}44` }"
         />
         <div class="min-w-0 flex-1">
-          <p class="truncate text-[12.5px] font-medium text-ink">{{ link.title }}</p>
-          <p class="mt-0.5 truncate text-[11px] text-ink-3">{{ link.url }}</p>
-          <p v-if="link.remark" class="mt-0.5 truncate text-[10.5px] text-ink-3">
+          <p class="truncate text-[14px] font-medium text-ink">{{ link.title }}</p>
+          <p class="mt-0.5 truncate text-[12.5px] text-ink-3">{{ link.url }}</p>
+          <p v-if="link.remark" class="mt-0.5 truncate text-[12px] text-ink-3">
             {{ link.remark }}
           </p>
         </div>
         <span class="chip shrink-0" :style="{ color: kindMeta(link.kind).color }">
           {{ kindMeta(link.kind).label }}
         </span>
-        <span class="shrink-0 text-[10.5px] text-ink-3">{{ formatDateTime(link.createdAt) }}</span>
+        <span class="shrink-0 text-[12px] text-ink-3">{{ formatDateTime(link.createdAt) }}</span>
         <div class="flex shrink-0 items-center gap-1.5">
-          <button class="btn btn-ghost h-7 px-2.5 text-[12px]" @click="open(link)">打开</button>
+          <button class="btn btn-ghost h-7 px-2.5 text-[13.5px]" @click="open(link)">打开</button>
           <button
-            class="btn btn-ghost h-7 px-2.5 text-[12px] border-[#4a2a24] text-danger"
+            class="btn btn-ghost h-7 px-2.5 text-[13.5px] border-[#4a2a24] text-danger"
             @click="remove(link)"
           >
             删除

@@ -32,7 +32,7 @@ const palette: Record<ToastKind, { bar: string; icon: string }> = {
               />
             </svg>
           </span>
-          <p class="flex-1 text-[12.5px] leading-snug text-ink break-words">{{ item.message }}</p>
+          <p class="flex-1 text-[14px] leading-snug text-ink break-words">{{ item.message }}</p>
         </div>
       </TransitionGroup>
     </div>

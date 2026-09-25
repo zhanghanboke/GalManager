@@ -139,12 +139,12 @@ onMounted(load);
 <template>
   <div class="max-w-[1000px] space-y-4">
     <div class="flex items-center gap-3">
-      <h3 class="text-[13px] font-semibold text-ink">汉化补丁与附加资源</h3>
-      <span class="text-[11.5px] text-ink-3">{{ patches.length }} 条记录</span>
+      <h3 class="text-[14.5px] font-semibold text-ink">汉化补丁与附加资源</h3>
+      <span class="text-[13px] text-ink-3">{{ patches.length }} 条记录</span>
       <button class="btn btn-primary ml-auto" @click="openCreate">+ 添加补丁</button>
     </div>
 
-    <div v-if="!patches.length" class="panel px-4 py-10 text-center text-[12px] text-ink-3">
+    <div v-if="!patches.length" class="panel px-4 py-10 text-center text-[13.5px] text-ink-3">
       还没有记录。可以在这里登记汉化补丁、去码补丁、官方更新等信息，
       并标记是否已安装，方便日后重装游戏时快速还原环境。
     </div>
@@ -167,43 +167,43 @@ onMounted(load);
         </button>
 
         <div class="min-w-0 flex-1">
-          <p class="flex items-center gap-2 text-[12.5px] font-medium text-ink">
+          <p class="flex items-center gap-2 text-[14px] font-medium text-ink">
             {{ patch.name }}
-            <span v-if="patch.version" class="text-[11px] font-normal text-ink-3">
+            <span v-if="patch.version" class="text-[12.5px] font-normal text-ink-3">
               v{{ patch.version }}
             </span>
             <span class="chip" :class="patch.installed === 1 ? 'text-sage' : 'text-ink-3'">
               {{ patch.installed === 1 ? "已安装" : "未安装" }}
             </span>
           </p>
-          <p class="mt-0.5 truncate text-[11px] text-ink-3">
+          <p class="mt-0.5 truncate text-[12.5px] text-ink-3">
             {{ typeLabel(patch.patchType) }}
             <template v-if="patch.filePath"> · {{ patch.filePath }}</template>
             <template v-if="patch.remark"> · {{ patch.remark }}</template>
           </p>
-          <p class="mt-0.5 text-[10.5px] text-ink-3">{{ formatDateTime(patch.createdAt) }}</p>
+          <p class="mt-0.5 text-[12px] text-ink-3">{{ formatDateTime(patch.createdAt) }}</p>
         </div>
 
         <div class="flex shrink-0 items-center gap-1.5">
           <button
             v-if="patch.filePath"
-            class="btn btn-ghost h-7 px-2.5 text-[12px]"
+            class="btn btn-ghost h-7 px-2.5 text-[13.5px]"
             @click="launchApi.openPath(patch.filePath).catch((e) => toast.error(errorText(e)))"
           >
             打开文件
           </button>
           <a
             v-if="patch.url"
-            class="btn btn-ghost h-7 px-2.5 text-[12px]"
+            class="btn btn-ghost h-7 px-2.5 text-[13.5px]"
             :href="patch.url"
             target="_blank"
             rel="noreferrer"
           >
             访问链接
           </a>
-          <button class="btn btn-ghost h-7 px-2.5 text-[12px]" @click="openEdit(patch)">编辑</button>
+          <button class="btn btn-ghost h-7 px-2.5 text-[13.5px]" @click="openEdit(patch)">编辑</button>
           <button
-            class="btn btn-ghost h-7 px-2.5 text-[12px] border-[#4a2a24] text-danger"
+            class="btn btn-ghost h-7 px-2.5 text-[13.5px] border-[#4a2a24] text-danger"
             @click="remove(patch)"
           >
             删除
@@ -251,7 +251,7 @@ onMounted(load);
           <label class="label">备注</label>
           <input v-model="form.remark" class="field" placeholder="例如：需先安装原版再打补丁" />
         </div>
-        <label class="flex cursor-pointer items-center gap-2 text-[12.5px] text-ink-2">
+        <label class="flex cursor-pointer items-center gap-2 text-[14px] text-ink-2">
           <input v-model="form.installed" type="checkbox" />
           已安装
         </label>

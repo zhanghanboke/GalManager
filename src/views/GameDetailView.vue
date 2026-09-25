@@ -133,7 +133,7 @@ onMounted(load);
     <!-- 头部 -->
     <header class="shrink-0 border-b border-line-soft px-6 pt-4 pb-0">
       <button
-        class="mb-3 flex items-center gap-1.5 text-[12px] text-ink-3 transition hover:text-ink"
+        class="mb-3 flex items-center gap-1.5 text-[13.5px] text-ink-3 transition hover:text-ink"
         @click="router.push('/')"
       >
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -149,7 +149,7 @@ onMounted(load);
           style="aspect-ratio: 3 / 4"
         >
           <img v-if="coverUrl" :src="coverUrl" :alt="game.title" class="h-full w-full object-cover" />
-          <div v-else class="flex h-full items-center justify-center text-[28px] text-ink-3/40">
+          <div v-else class="flex h-full items-center justify-center text-[32px] text-ink-3/40">
             {{ game.title.charAt(0) }}
           </div>
         </div>
@@ -158,10 +158,10 @@ onMounted(load);
         <div class="flex min-w-0 flex-1 flex-col">
           <div class="flex items-start gap-3">
             <div class="min-w-0 flex-1">
-              <h1 class="truncate text-[20px] font-semibold tracking-tight text-ink">
+              <h1 class="truncate text-[22px] font-semibold tracking-tight text-ink">
                 {{ game.title }}
               </h1>
-              <p v-if="game.originalTitle" class="mt-0.5 truncate text-[12.5px] text-ink-3">
+              <p v-if="game.originalTitle" class="mt-0.5 truncate text-[14px] text-ink-3">
                 {{ game.originalTitle }}
               </p>
             </div>
@@ -178,7 +178,7 @@ onMounted(load);
           </div>
 
           <!-- 元信息 -->
-          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12px] text-ink-3">
+          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13.5px] text-ink-3">
             <span class="flex items-center gap-1.5">
               <span class="h-1.5 w-1.5 rounded-full" :style="{ background: statusColor }" />
               {{ STATUS_LABELS[game.playStatus] }}
@@ -217,7 +217,7 @@ onMounted(load);
             <button class="btn btn-ghost" @click="editing = true">编辑信息</button>
 
             <select
-              class="field h-[34px] w-[110px] cursor-pointer"
+              class="field h-[37px] w-[118px] cursor-pointer"
               :value="game.playStatus"
               @change="setStatus(($event.target as HTMLSelectElement).value)"
             >
@@ -241,7 +241,7 @@ onMounted(load);
         <button
           v-for="tab in tabs"
           :key="tab.key"
-          class="relative px-3.5 py-2.5 text-[12.5px] transition"
+          class="relative px-3.5 py-2.5 text-[14px] transition"
           :class="activeTab === tab.key ? 'text-ink' : 'text-ink-3 hover:text-ink-2'"
           @click="activeTab = tab.key"
         >
@@ -260,35 +260,35 @@ onMounted(load);
       <div v-if="activeTab === 'overview'" class="grid max-w-[1000px] grid-cols-[1fr_280px] gap-5">
         <div class="space-y-4">
           <section class="panel p-4">
-            <h3 class="mb-3 text-[13px] font-semibold text-ink">游戏简介</h3>
-            <p class="text-[12.5px] leading-relaxed whitespace-pre-line text-ink-2">
+            <h3 class="mb-3 text-[14.5px] font-semibold text-ink">游戏简介</h3>
+            <p class="text-[14px] leading-relaxed whitespace-pre-line text-ink-2">
               {{ game.description || "暂无简介，可点击「编辑信息」补充。" }}
             </p>
           </section>
 
           <section v-if="game.notes" class="panel p-4">
-            <h3 class="mb-3 text-[13px] font-semibold text-ink">备注</h3>
-            <p class="text-[12.5px] leading-relaxed whitespace-pre-line text-ink-2">
+            <h3 class="mb-3 text-[14.5px] font-semibold text-ink">备注</h3>
+            <p class="text-[14px] leading-relaxed whitespace-pre-line text-ink-2">
               {{ game.notes }}
             </p>
           </section>
 
           <section class="panel p-4">
-            <h3 class="mb-3 text-[13px] font-semibold text-ink">游玩概况</h3>
+            <h3 class="mb-3 text-[14.5px] font-semibold text-ink">游玩概况</h3>
             <div class="grid grid-cols-3 gap-3">
               <div class="rounded-xl bg-surface-2 p-3">
-                <p class="text-[11px] text-ink-3">总时长</p>
-                <p class="mt-1 text-[16px] font-semibold text-ink">
+                <p class="text-[12.5px] text-ink-3">总时长</p>
+                <p class="mt-1 text-[17.5px] font-semibold text-ink">
                   {{ formatDuration(game.totalPlaySeconds) }}
                 </p>
               </div>
               <div class="rounded-xl bg-surface-2 p-3">
-                <p class="text-[11px] text-ink-3">游玩次数</p>
-                <p class="mt-1 text-[16px] font-semibold text-ink">{{ game.sessionCount }}</p>
+                <p class="text-[12.5px] text-ink-3">游玩次数</p>
+                <p class="mt-1 text-[17.5px] font-semibold text-ink">{{ game.sessionCount }}</p>
               </div>
               <div class="rounded-xl bg-surface-2 p-3">
-                <p class="text-[11px] text-ink-3">存档备份</p>
-                <p class="mt-1 text-[16px] font-semibold text-ink">{{ game.saveCount }}</p>
+                <p class="text-[12.5px] text-ink-3">存档备份</p>
+                <p class="mt-1 text-[17.5px] font-semibold text-ink">{{ game.saveCount }}</p>
               </div>
             </div>
           </section>
@@ -296,29 +296,29 @@ onMounted(load);
 
         <aside class="space-y-4">
           <section class="panel p-4">
-            <h3 class="mb-3 text-[13px] font-semibold text-ink">引擎识别</h3>
+            <h3 class="mb-3 text-[14.5px] font-semibold text-ink">引擎识别</h3>
             <template v-if="engineInfo">
-              <p class="text-[13px] font-medium text-accent">{{ engineInfo.label }}</p>
-              <p class="mt-1 text-[11.5px] text-ink-3">置信度 {{ engineInfo.confidence }}%</p>
+              <p class="text-[14.5px] font-medium text-accent">{{ engineInfo.label }}</p>
+              <p class="mt-1 text-[13px] text-ink-3">置信度 {{ engineInfo.confidence }}%</p>
               <ul class="mt-2.5 space-y-1">
                 <li
                   v-for="(item, i) in engineInfo.evidence.slice(0, 4)"
                   :key="i"
-                  class="flex gap-1.5 text-[11.5px] text-ink-3"
+                  class="flex gap-1.5 text-[13px] text-ink-3"
                 >
                   <span class="text-accent">·</span>{{ item }}
                 </li>
               </ul>
             </template>
-            <p v-else class="text-[12px] text-ink-3">未识别到已知引擎</p>
-            <p v-if="saveHint" class="mt-3 rounded-lg bg-surface-2 p-2.5 text-[11px] leading-relaxed text-ink-3">
+            <p v-else class="text-[13.5px] text-ink-3">未识别到已知引擎</p>
+            <p v-if="saveHint" class="mt-3 rounded-lg bg-surface-2 p-2.5 text-[12.5px] leading-relaxed text-ink-3">
               默认存档位置：{{ saveHint }}
             </p>
           </section>
 
           <section class="panel p-4">
-            <h3 class="mb-3 text-[13px] font-semibold text-ink">路径信息</h3>
-            <div class="space-y-2.5 text-[11.5px]">
+            <h3 class="mb-3 text-[14.5px] font-semibold text-ink">路径信息</h3>
+            <div class="space-y-2.5 text-[13px]">
               <div>
                 <p class="text-ink-3">游戏目录</p>
                 <p class="mt-0.5 break-all text-ink-2">{{ game.path || "未设置" }}</p>

@@ -457,7 +457,7 @@ onUnmounted(() => {
 
         <button
           v-if="library.hasActiveFilter"
-          class="ml-1 text-[11.5px] text-accent hover:underline"
+          class="ml-1 text-[13px] text-accent hover:underline"
           @click="
             () => {
               searchInput = '';
@@ -468,7 +468,7 @@ onUnmounted(() => {
           清除筛选
         </button>
 
-        <span class="ml-auto text-[11.5px] text-ink-3">
+        <span class="ml-auto text-[13px] text-ink-3">
           共 {{ library.games.length }} 个游戏
         </span>
       </div>

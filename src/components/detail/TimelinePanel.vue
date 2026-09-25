@@ -63,25 +63,25 @@ onMounted(load);
 <template>
   <div class="max-w-[860px]">
     <div class="mb-4 flex items-center gap-3">
-      <h3 class="text-[13px] font-semibold text-ink">游玩记录</h3>
-      <span class="text-[11.5px] text-ink-3">
+      <h3 class="text-[14.5px] font-semibold text-ink">游玩记录</h3>
+      <span class="text-[13px] text-ink-3">
         {{ sessions.length }} 次 · 合计 {{ formatDuration(totalSeconds) }}
       </span>
-      <button class="btn btn-ghost ml-auto h-7 px-2.5 text-[12px]" :disabled="loading" @click="load">
+      <button class="btn btn-ghost ml-auto h-7 px-2.5 text-[13.5px]" :disabled="loading" @click="load">
         刷新
       </button>
     </div>
 
-    <div v-if="!sessions.length" class="panel px-4 py-10 text-center text-[12px] text-ink-3">
+    <div v-if="!sessions.length" class="panel px-4 py-10 text-center text-[13.5px] text-ink-3">
       还没有游玩记录。通过 GalManager 启动游戏后会自动开始计时。
     </div>
 
     <div v-else class="space-y-5">
       <section v-for="group in grouped" :key="group.date">
         <header class="mb-2 flex items-center gap-2.5">
-          <span class="text-[12px] font-medium text-ink">{{ group.date }}</span>
+          <span class="text-[13.5px] font-medium text-ink">{{ group.date }}</span>
           <span class="h-px flex-1 bg-line-soft" />
-          <span class="text-[11px] text-ink-3">{{ formatDuration(group.total) }}</span>
+          <span class="text-[12.5px] text-ink-3">{{ formatDuration(group.total) }}</span>
         </header>
 
         <div class="space-y-1.5">
@@ -91,15 +91,15 @@ onMounted(load);
             class="panel group flex items-center gap-3 px-3.5 py-2.5"
           >
             <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-            <span class="w-[112px] shrink-0 text-[11.5px] text-ink-3">
+            <span class="w-[112px] shrink-0 text-[13px] text-ink-3">
               {{ session.startedAt.slice(11, 16) }}
               <template v-if="session.endedAt"> – {{ session.endedAt.slice(11, 16) }}</template>
             </span>
-            <span class="flex-1 text-[12.5px] text-ink-2">
+            <span class="flex-1 text-[14px] text-ink-2">
               {{ formatDuration(session.durationSeconds) }}
             </span>
             <button
-              class="hidden text-[11px] text-ink-3 transition group-hover:block hover:text-danger"
+              class="hidden text-[12.5px] text-ink-3 transition group-hover:block hover:text-danger"
               @click="remove(session)"
             >
               删除

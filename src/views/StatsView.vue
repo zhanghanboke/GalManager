@@ -100,8 +100,8 @@ onMounted(load);
     <div class="mx-auto max-w-[1180px]">
       <header class="mb-5 flex items-end justify-between">
         <div>
-          <h1 class="text-[19px] font-semibold tracking-tight text-ink">数据统计</h1>
-          <p class="mt-1 text-[12.5px] text-ink-3">
+          <h1 class="text-[21px] font-semibold tracking-tight text-ink">数据统计</h1>
+          <p class="mt-1 text-[14px] text-ink-3">
             记录你在 Galgame 世界里的每一段时光
           </p>
         </div>
@@ -113,50 +113,50 @@ onMounted(load);
       <!-- 概览卡片 -->
       <section class="mb-5 grid grid-cols-4 gap-3.5">
         <div class="panel p-4">
-          <p class="text-[11.5px] text-ink-3">游戏总数</p>
-          <p class="mt-1.5 text-[24px] leading-none font-semibold text-ink">
+          <p class="text-[13px] text-ink-3">游戏总数</p>
+          <p class="mt-1.5 text-[28px] leading-none font-semibold text-ink">
             {{ overview?.totalGames ?? 0 }}
           </p>
-          <p class="mt-2 text-[11px] text-ink-3">
+          <p class="mt-2 text-[12.5px] text-ink-3">
             收藏 {{ overview?.favoriteGames ?? 0 }} · 已通关 {{ overview?.completedGames ?? 0 }}
           </p>
         </div>
         <div class="panel p-4">
-          <p class="text-[11.5px] text-ink-3">总游玩时长</p>
-          <p class="mt-1.5 text-[24px] leading-none font-semibold text-accent">
+          <p class="text-[13px] text-ink-3">总游玩时长</p>
+          <p class="mt-1.5 text-[28px] leading-none font-semibold text-accent">
             {{ formatHours(overview?.totalPlaySeconds ?? 0) }}
           </p>
-          <p class="mt-2 text-[11px] text-ink-3">
+          <p class="mt-2 text-[12.5px] text-ink-3">
             近 7 天 {{ formatHours(overview?.weekPlaySeconds ?? 0) }}
           </p>
         </div>
         <div class="panel p-4">
-          <p class="text-[11.5px] text-ink-3">近 30 天</p>
-          <p class="mt-1.5 text-[24px] leading-none font-semibold text-sage">
+          <p class="text-[13px] text-ink-3">近 30 天</p>
+          <p class="mt-1.5 text-[28px] leading-none font-semibold text-sage">
             {{ formatHours(overview?.monthPlaySeconds ?? 0) }}
           </p>
-          <p class="mt-2 text-[11px] text-ink-3">在玩 {{ overview?.playingGames ?? 0 }} 款</p>
+          <p class="mt-2 text-[12.5px] text-ink-3">在玩 {{ overview?.playingGames ?? 0 }} 款</p>
         </div>
         <div class="panel p-4">
-          <p class="text-[11.5px] text-ink-3">存档备份</p>
-          <p class="mt-1.5 text-[24px] leading-none font-semibold text-clay">
+          <p class="text-[13px] text-ink-3">存档备份</p>
+          <p class="mt-1.5 text-[28px] leading-none font-semibold text-clay">
             {{ overview?.saveSlotCount ?? 0 }}
           </p>
-          <p class="mt-2 text-[11px] text-ink-3">个槽位</p>
+          <p class="mt-2 text-[12.5px] text-ink-3">个槽位</p>
         </div>
       </section>
 
       <!-- 年度报告 -->
       <section v-if="report" class="panel mb-5 p-5">
         <div class="mb-4 flex items-center gap-3">
-          <h2 class="text-[14px] font-semibold text-ink">{{ report.year }} 年度游玩报告</h2>
+          <h2 class="text-[15.5px] font-semibold text-ink">{{ report.year }} 年度游玩报告</h2>
           <span class="chip text-accent">{{ report.totalSessions }} 次游玩</span>
         </div>
 
         <div class="grid grid-cols-[1.35fr_1fr] gap-6">
           <!-- 月度柱状图 -->
           <div>
-            <p class="mb-3 text-[11.5px] text-ink-3">各月游玩时长分布</p>
+            <p class="mb-3 text-[13px] text-ink-3">各月游玩时长分布</p>
             <div class="flex h-[132px] items-end gap-1.5">
               <div
                 v-for="(seconds, index) in report.monthly"
@@ -165,7 +165,7 @@ onMounted(load);
                 :title="`${index + 1} 月 · ${formatDuration(seconds)}`"
               >
                 <span
-                  class="mb-1.5 text-center text-[9.5px] text-ink-3 opacity-0 transition group-hover:opacity-100"
+                  class="mb-1.5 text-center text-[11px] text-ink-3 opacity-0 transition group-hover:opacity-100"
                 >
                   {{ seconds > 0 ? formatHours(seconds) : "" }}
                 </span>
@@ -185,7 +185,7 @@ onMounted(load);
               <span
                 v-for="n in 12"
                 :key="n"
-                class="flex-1 text-center text-[9.5px] text-ink-3"
+                class="flex-1 text-center text-[11px] text-ink-3"
               >
                 {{ n }}
               </span>
@@ -195,43 +195,43 @@ onMounted(load);
           <!-- 关键数据 -->
           <div class="space-y-2.5">
             <div class="flex items-center justify-between rounded-xl bg-surface-2 px-3.5 py-2.5">
-              <span class="text-[12px] text-ink-3">年度总时长</span>
-              <span class="text-[13px] font-semibold text-ink">
+              <span class="text-[13.5px] text-ink-3">年度总时长</span>
+              <span class="text-[14.5px] font-semibold text-ink">
                 {{ formatDuration(report.totalSeconds) }}
               </span>
             </div>
             <div class="flex items-center justify-between rounded-xl bg-surface-2 px-3.5 py-2.5">
-              <span class="text-[12px] text-ink-3">活跃天数</span>
-              <span class="text-[13px] font-semibold text-ink">{{ report.activeDays }} 天</span>
+              <span class="text-[13.5px] text-ink-3">活跃天数</span>
+              <span class="text-[14.5px] font-semibold text-ink">{{ report.activeDays }} 天</span>
             </div>
             <div class="flex items-center justify-between rounded-xl bg-surface-2 px-3.5 py-2.5">
-              <span class="text-[12px] text-ink-3">日均时长</span>
-              <span class="text-[13px] font-semibold text-ink">
+              <span class="text-[13.5px] text-ink-3">日均时长</span>
+              <span class="text-[14.5px] font-semibold text-ink">
                 {{ formatDuration(report.averageSeconds) }}
               </span>
             </div>
             <div class="flex items-center justify-between rounded-xl bg-surface-2 px-3.5 py-2.5">
-              <span class="text-[12px] text-ink-3">最长单次</span>
-              <span class="text-[13px] font-semibold text-ink">
+              <span class="text-[13.5px] text-ink-3">最长单次</span>
+              <span class="text-[14.5px] font-semibold text-ink">
                 {{ formatDuration(report.longestSessionSeconds) }}
               </span>
             </div>
             <div class="rounded-xl bg-surface-2 px-3.5 py-2.5">
-              <p class="text-[12px] text-ink-3">年度最爱</p>
-              <p class="mt-0.5 truncate text-[13px] font-semibold text-accent">
+              <p class="text-[13.5px] text-ink-3">年度最爱</p>
+              <p class="mt-0.5 truncate text-[14.5px] font-semibold text-accent">
                 {{ report.topGame || "—" }}
               </p>
             </div>
             <div class="flex gap-2.5">
               <div class="flex-1 rounded-xl bg-surface-2 px-3 py-2.5">
-                <p class="text-[11px] text-ink-3">新通关</p>
-                <p class="mt-0.5 text-[15px] font-semibold text-sage">
+                <p class="text-[12.5px] text-ink-3">新通关</p>
+                <p class="mt-0.5 text-[16.5px] font-semibold text-sage">
                   {{ report.completedCount }}
                 </p>
               </div>
               <div class="flex-1 rounded-xl bg-surface-2 px-3 py-2.5">
-                <p class="text-[11px] text-ink-3">新入库</p>
-                <p class="mt-0.5 text-[15px] font-semibold text-clay">
+                <p class="text-[12.5px] text-ink-3">新入库</p>
+                <p class="mt-0.5 text-[16.5px] font-semibold text-clay">
                   {{ report.addedCount }}
                 </p>
               </div>
@@ -241,7 +241,7 @@ onMounted(load);
 
         <!-- 星期分布 -->
         <div class="mt-6">
-          <p class="mb-3 text-[11.5px] text-ink-3">星期分布（你最爱在哪天玩）</p>
+          <p class="mb-3 text-[13px] text-ink-3">星期分布（你最爱在哪天玩）</p>
           <div class="flex h-[74px] items-end gap-2">
             <div
               v-for="(seconds, index) in report.weekday"
@@ -260,7 +260,7 @@ onMounted(load);
             </div>
           </div>
           <div class="mt-2 flex gap-2">
-            <span v-for="label in weekLabels" :key="label" class="flex-1 text-center text-[10px] text-ink-3">
+            <span v-for="label in weekLabels" :key="label" class="flex-1 text-center text-[11.5px] text-ink-3">
               {{ label }}
             </span>
           </div>
@@ -270,7 +270,7 @@ onMounted(load);
       <!-- 近 30 天趋势 + 引擎分布 -->
       <section class="mb-5 grid grid-cols-[1.6fr_1fr] gap-4">
         <div class="panel p-4">
-          <h2 class="mb-3 text-[13px] font-semibold text-ink">近 30 天游玩趋势</h2>
+          <h2 class="mb-3 text-[14.5px] font-semibold text-ink">近 30 天游玩趋势</h2>
           <svg v-if="daily.length >= 2" viewBox="0 0 620 96" class="h-[110px] w-full" preserveAspectRatio="none">
             <defs>
               <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
@@ -288,14 +288,14 @@ onMounted(load);
               stroke-linecap="round"
             />
           </svg>
-          <p v-else class="py-8 text-center text-[12px] text-ink-3">数据还不够，多玩几天吧</p>
+          <p v-else class="py-8 text-center text-[13.5px] text-ink-3">数据还不够，多玩几天吧</p>
         </div>
 
         <div class="panel p-4">
-          <h2 class="mb-3 text-[13px] font-semibold text-ink">引擎分布</h2>
+          <h2 class="mb-3 text-[14.5px] font-semibold text-ink">引擎分布</h2>
           <div v-if="engineDist.length" class="space-y-2.5">
             <div v-for="[id, count] in engineDist.slice(0, 7)" :key="id">
-              <div class="mb-1 flex items-center justify-between text-[11.5px]">
+              <div class="mb-1 flex items-center justify-between text-[13px]">
                 <span class="text-ink-2">{{ engineLabel(id) }}</span>
                 <span class="text-ink-3">{{ count }}</span>
               </div>
@@ -310,13 +310,13 @@ onMounted(load);
               </div>
             </div>
           </div>
-          <p v-else class="py-8 text-center text-[12px] text-ink-3">暂无数据</p>
+          <p v-else class="py-8 text-center text-[13.5px] text-ink-3">暂无数据</p>
         </div>
       </section>
 
       <!-- 时长排行 -->
       <section v-if="report?.ranking.length" class="panel p-4">
-        <h2 class="mb-3.5 text-[13px] font-semibold text-ink">
+        <h2 class="mb-3.5 text-[14.5px] font-semibold text-ink">
           {{ report.year }} 年游玩时长排行
         </h2>
         <div class="space-y-2">
@@ -326,7 +326,7 @@ onMounted(load);
             class="flex items-center gap-3"
           >
             <span
-              class="w-5 shrink-0 text-center text-[12px] font-semibold"
+              class="w-5 shrink-0 text-center text-[13.5px] font-semibold"
               :class="index < 3 ? 'text-accent' : 'text-ink-3'"
             >
               {{ index + 1 }}
@@ -342,7 +342,7 @@ onMounted(load);
               />
             </div>
             <div class="min-w-0 flex-1">
-              <p class="truncate text-[12.5px] text-ink">{{ item.title }}</p>
+              <p class="truncate text-[14px] text-ink">{{ item.title }}</p>
               <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-3">
                 <div
                   class="h-full rounded-full bg-gradient-to-r from-accent to-clay"
@@ -351,8 +351,8 @@ onMounted(load);
               </div>
             </div>
             <div class="w-[92px] shrink-0 text-right">
-              <p class="text-[12.5px] font-medium text-ink">{{ formatHours(item.seconds) }}</p>
-              <p class="text-[10.5px] text-ink-3">{{ item.sessions }} 次</p>
+              <p class="text-[14px] font-medium text-ink">{{ formatHours(item.seconds) }}</p>
+              <p class="text-[12px] text-ink-3">{{ item.sessions }} 次</p>
             </div>
           </div>
         </div>

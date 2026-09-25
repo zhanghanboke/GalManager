@@ -43,17 +43,17 @@ onMounted(() => {
       <!-- 头部 -->
       <section class="mb-6 flex items-start gap-4">
         <div
-          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-clay text-[26px] font-bold text-[#2a1806] shadow-xl shadow-accent/25"
+          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-clay text-[30px] font-bold text-[#2a1806] shadow-xl shadow-accent/25"
         >
           G
         </div>
         <div class="min-w-0 flex-1">
-          <h1 class="text-[22px] font-semibold tracking-tight text-ink">GalManager</h1>
-          <p class="mt-1 text-[12.5px] text-ink-3">
+          <h1 class="text-[24px] font-semibold tracking-tight text-ink">GalManager</h1>
+          <p class="mt-1 text-[14px] text-ink-3">
             Galgame 专属桌面管理器 · 版本
             <span class="text-accent">v{{ settings.appInfo?.version ?? "0.1.0" }}</span>
           </p>
-          <p class="mt-3 max-w-[560px] text-[12.5px] leading-relaxed text-ink-2">
+          <p class="mt-3 max-w-[560px] text-[14px] leading-relaxed text-ink-2">
             为 Galgame 玩家打造的一站式本地管理器。把散落在各个硬盘角落的视觉小说整理成一座
             属于自己的封面墙，同时替你记住每一段游玩时光。
           </p>
@@ -62,7 +62,7 @@ onMounted(() => {
 
       <!-- 功能 -->
       <section class="mb-6">
-        <h2 class="mb-3 text-[13.5px] font-semibold text-ink">核心功能</h2>
+        <h2 class="mb-3 text-[15px] font-semibold text-ink">核心功能</h2>
         <div class="grid grid-cols-2 gap-2.5">
           <div
             v-for="(feature, index) in features"
@@ -74,15 +74,15 @@ onMounted(() => {
               transitionDelay: `${index * 40}ms`,
             }"
           >
-            <p class="text-[12.5px] font-medium text-ink">{{ feature.title }}</p>
-            <p class="mt-1 text-[11.5px] leading-relaxed text-ink-3">{{ feature.desc }}</p>
+            <p class="text-[14px] font-medium text-ink">{{ feature.title }}</p>
+            <p class="mt-1 text-[13px] leading-relaxed text-ink-3">{{ feature.desc }}</p>
           </div>
         </div>
       </section>
 
       <!-- 技术栈 -->
       <section class="panel mb-6 p-4">
-        <h2 class="mb-3 text-[13.5px] font-semibold text-ink">技术栈</h2>
+        <h2 class="mb-3 text-[15px] font-semibold text-ink">技术栈</h2>
         <div class="flex flex-wrap gap-2">
           <span v-for="item in stack" :key="item.name" class="chip">
             <span class="text-ink">{{ item.name }}</span>
@@ -93,8 +93,8 @@ onMounted(() => {
 
       <!-- 环境信息 -->
       <section class="panel mb-6 p-4">
-        <h2 class="mb-3 text-[13.5px] font-semibold text-ink">运行环境</h2>
-        <dl class="grid grid-cols-2 gap-x-6 gap-y-2.5 text-[12px]">
+        <h2 class="mb-3 text-[15px] font-semibold text-ink">运行环境</h2>
+        <dl class="grid grid-cols-2 gap-x-6 gap-y-2.5 text-[13.5px]">
           <div class="flex justify-between">
             <dt class="text-ink-3">操作系统</dt>
             <dd class="text-ink-2">{{ settings.appInfo?.os }} / {{ settings.appInfo?.arch }}</dd>
@@ -105,13 +105,13 @@ onMounted(() => {
           </div>
           <div class="col-span-2 flex justify-between gap-4">
             <dt class="shrink-0 text-ink-3">数据目录</dt>
-            <dd class="truncate font-mono text-[11px] text-ink-2" :title="settings.appInfo?.dataDir">
+            <dd class="truncate font-mono text-[12.5px] text-ink-2" :title="settings.appInfo?.dataDir">
               {{ settings.appInfo?.dataDir }}
             </dd>
           </div>
         </dl>
         <button
-          class="btn btn-ghost mt-3.5 h-7 px-2.5 text-[12px]"
+          class="btn btn-ghost mt-3.5 h-7 px-2.5 text-[13.5px]"
           @click="launchApi.openAppDataDir().catch((e) => toast.error(errorText(e)))"
         >
           打开数据目录
@@ -120,8 +120,8 @@ onMounted(() => {
 
       <!-- 致谢与链接 -->
       <section class="panel p-4">
-        <h2 class="mb-3 text-[13.5px] font-semibold text-ink">致谢</h2>
-        <p class="text-[12px] leading-relaxed text-ink-2">
+        <h2 class="mb-3 text-[15px] font-semibold text-ink">致谢</h2>
+        <p class="text-[13.5px] leading-relaxed text-ink-2">
           本项目在架构设计上参考了开源项目
           <button
             class="text-accent hover:underline"
@@ -149,7 +149,7 @@ onMounted(() => {
           <button class="btn btn-ghost" @click="openLink('https://tauri.app')">Tauri</button>
         </div>
 
-        <p class="mt-4 text-[11px] text-ink-3">
+        <p class="mt-4 text-[12.5px] text-ink-3">
           本工具仅用于管理本地已合法获取的游戏，不提供任何游戏内容下载。
         </p>
       </section>

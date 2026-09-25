@@ -61,14 +61,14 @@ onMounted(() => {
       :style="{ left: `${position.left}px`, top: `${position.top}px` }"
       @click.stop
     >
-      <p class="truncate px-3 pt-1 pb-2 text-[11.5px] font-medium text-ink-3">
+      <p class="truncate px-3 pt-1 pb-2 text-[13px] font-medium text-ink-3">
         {{ game.title }}
       </p>
       <template v-for="(item, index) in items" :key="index">
         <div v-if="item.divider" class="my-1 h-px bg-line-soft" />
         <button
           v-else
-          class="flex h-8 w-full items-center gap-2.5 px-3 text-[12.5px] transition"
+          class="flex h-8 w-full items-center gap-2.5 px-3 text-[14px] transition"
           :class="
             item.danger
               ? 'text-danger hover:bg-danger/12'

@@ -111,7 +111,7 @@ onMounted(load);
   <div class="flex h-full max-w-[1100px] gap-4">
     <!-- 列表 -->
     <aside class="w-[210px] shrink-0">
-      <button class="btn btn-primary mb-2.5 w-full text-[12px]" @click="newNote">
+      <button class="btn btn-primary mb-2.5 w-full text-[13.5px]" @click="newNote">
         + 新建笔记
       </button>
       <div class="space-y-1">
@@ -127,8 +127,8 @@ onMounted(load);
           @click="select(note)"
         >
           <div class="min-w-0 flex-1">
-            <p class="truncate text-[12px] text-ink">{{ note.title }}</p>
-            <p class="mt-0.5 text-[10.5px] text-ink-3">{{ formatDateTime(note.updatedAt) }}</p>
+            <p class="truncate text-[13.5px] text-ink">{{ note.title }}</p>
+            <p class="mt-0.5 text-[12px] text-ink-3">{{ formatDateTime(note.updatedAt) }}</p>
           </div>
           <span
             class="hidden h-5 w-5 shrink-0 items-center justify-center rounded-md text-ink-3 group-hover:flex hover:text-danger"
@@ -140,7 +140,7 @@ onMounted(load);
           </span>
         </button>
       </div>
-      <p v-if="!notes.length" class="px-1 py-2 text-[11.5px] text-ink-3">
+      <p v-if="!notes.length" class="px-1 py-2 text-[13px] text-ink-3">
         还没有笔记。攻略、分支路线、CG 解锁条件都可以记在这里。
       </p>
     </aside>
@@ -155,13 +155,13 @@ onMounted(load);
           @input="dirty = true"
         />
         <button
-          class="btn btn-ghost h-[34px] px-2.5 text-[12px]"
+          class="btn btn-ghost h-[37px] px-3 text-[13.5px]"
           :class="preview ? 'text-accent' : ''"
           @click="preview = !preview"
         >
           {{ preview ? "编辑" : "预览" }}
         </button>
-        <button class="btn btn-primary h-[34px]" :disabled="!dirty && activeId !== null" @click="save">
+        <button class="btn btn-primary h-[37px]" :disabled="!dirty && activeId !== null" @click="save">
           保存
         </button>
       </div>
@@ -169,7 +169,7 @@ onMounted(load);
       <textarea
         v-if="!preview"
         v-model="draftContent"
-        class="field min-h-[380px] flex-1 font-mono text-[12.5px]"
+        class="field min-h-[380px] flex-1 font-mono text-[14px]"
         placeholder="支持简易 Markdown：&#10;# 一级标题  ## 二级标题  ### 三级标题&#10;- 列表项&#10;**加粗**&#10;--- 分割线"
         @input="dirty = true"
       />
@@ -180,7 +180,7 @@ onMounted(load);
         v-html="renderMarkdown(draftContent || '*（空）*')"
       />
 
-      <p v-if="active" class="mt-2 text-[11px] text-ink-3">
+      <p v-if="active" class="mt-2 text-[12.5px] text-ink-3">
         创建于 {{ formatDateTime(active.createdAt) }} · 最后更新 {{ formatDateTime(active.updatedAt) }}
       </p>
     </section>

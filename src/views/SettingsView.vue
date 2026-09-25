@@ -289,13 +289,13 @@ onMounted(async () => {
   <div class="min-h-0 flex-1 scroll-y px-6 py-5">
     <div class="mx-auto max-w-[880px] space-y-4">
       <header class="mb-1">
-        <h1 class="text-[19px] font-semibold tracking-tight text-ink">设置</h1>
-        <p class="mt-1 text-[12.5px] text-ink-3">启动方式、存档备份与数据管理</p>
+        <h1 class="text-[21px] font-semibold tracking-tight text-ink">设置</h1>
+        <p class="mt-1 text-[14px] text-ink-3">启动方式、存档备份与数据管理</p>
       </header>
 
       <!-- 通用 -->
       <section class="panel p-5">
-        <h2 class="mb-4 text-[13.5px] font-semibold text-ink">通用</h2>
+        <h2 class="mb-4 text-[15px] font-semibold text-ink">通用</h2>
 
         <div class="space-y-4">
           <div>
@@ -321,8 +321,8 @@ onMounted(async () => {
               @change="update('close_to_tray', ($event.target as HTMLInputElement).checked ? 'true' : 'false')"
             />
             <span>
-              <span class="text-[12.5px] text-ink">关闭窗口时最小化到系统托盘</span>
-              <span class="mt-0.5 block text-[11.5px] text-ink-3">
+              <span class="text-[14px] text-ink">关闭窗口时最小化到系统托盘</span>
+              <span class="mt-0.5 block text-[13px] text-ink-3">
                 保持后台运行，游玩计时不中断。托盘图标右键可退出。
               </span>
             </span>
@@ -332,8 +332,8 @@ onMounted(async () => {
 
       <!-- 启动 -->
       <section class="panel p-5">
-        <h2 class="mb-1 text-[13.5px] font-semibold text-ink">启动与转区</h2>
-        <p class="mb-4 text-[11.5px] text-ink-3">
+        <h2 class="mb-1 text-[15px] font-semibold text-ink">启动与转区</h2>
+        <p class="mb-4 text-[13px] text-ink-3">
           Galgame 多为日文编码，通过 Locale Emulator 启动可避免乱码与区域检测失败。
         </p>
 
@@ -361,7 +361,7 @@ onMounted(async () => {
               :value="settings.values.le_args_template ?? '{exe}'"
               @change="update('le_args_template', ($event.target as HTMLInputElement).value)"
             />
-            <p class="mt-1.5 text-[11px] leading-relaxed text-ink-3">
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-ink-3">
               可用占位符：<code class="text-accent">{exe}</code> 游戏可执行文件 ·
               <code class="text-accent">{args}</code> 游戏参数 ·
               <code class="text-accent">{locale}</code> 区域 ·
@@ -384,7 +384,7 @@ onMounted(async () => {
 
       <!-- 存档 -->
       <section class="panel p-5">
-        <h2 class="mb-4 text-[13.5px] font-semibold text-ink">存档备份</h2>
+        <h2 class="mb-4 text-[15px] font-semibold text-ink">存档备份</h2>
 
         <div class="space-y-4">
           <div>
@@ -410,18 +410,18 @@ onMounted(async () => {
             <button class="btn btn-primary" :disabled="backingUp" @click="runBackupAll">
               {{ backingUp ? "备份中…" : "一键备份全部存档" }}
             </button>
-            <span class="text-[11.5px] text-ink-3">
+            <span class="text-[13px] text-ink-3">
               自动识别各游戏存档位置并逐个备份
             </span>
           </div>
 
           <div v-if="backupReport.length" class="rounded-xl border border-line bg-surface-2 p-3">
-            <p class="mb-2 text-[11.5px] text-ink-3">最近一次批量备份结果</p>
+            <p class="mb-2 text-[13px] text-ink-3">最近一次批量备份结果</p>
             <div class="max-h-[180px] scroll-y space-y-1">
               <p
                 v-for="[gameId, message, ok] in backupReport"
                 :key="gameId"
-                class="flex items-center gap-2 text-[11.5px]"
+                class="flex items-center gap-2 text-[13px]"
               >
                 <span class="h-1.5 w-1.5 shrink-0 rounded-full" :style="{ background: ok ? '#a9bd6b' : '#e8b04b' }" />
                 <span class="text-ink-3">#{{ gameId }}</span>
@@ -440,8 +440,8 @@ onMounted(async () => {
                 @change="onToggleAutoBackup(($event.target as HTMLInputElement).checked)"
               />
               <span>
-                <span class="text-[12.5px] text-ink">定时自动备份存档</span>
-                <span class="mt-0.5 block text-[11.5px] leading-relaxed text-ink-3">
+                <span class="text-[14px] text-ink">定时自动备份存档</span>
+                <span class="mt-0.5 block text-[13px] leading-relaxed text-ink-3">
                   后台按间隔自动备份，只处理存档内容有变化的游戏，
                   不会反复写入完全相同的归档。
                 </span>
@@ -473,7 +473,7 @@ onMounted(async () => {
                 <button class="btn btn-ghost" :disabled="autoRunning" @click="runAutoBackupNow">
                   {{ autoRunning ? "备份中…" : "立即备份一次" }}
                 </button>
-                <span class="text-[11.5px] text-ink-3">
+                <span class="text-[13px] text-ink-3">
                   <template v-if="autoStatus?.lastRunAt">
                     上次执行：{{ autoStatus.lastRunAt }}
                   </template>
@@ -487,8 +487,8 @@ onMounted(async () => {
 
       <!-- 库导出 / 导入 -->
       <section class="panel p-5">
-        <h2 class="mb-1 text-[13.5px] font-semibold text-ink">数据备份与迁移</h2>
-        <p class="mb-4 text-[11.5px] text-ink-3">
+        <h2 class="mb-1 text-[15px] font-semibold text-ink">数据备份与迁移</h2>
+        <p class="mb-4 text-[13px] text-ink-3">
           把整个游戏库（游戏、分类、标签、游玩记录、笔记、补丁、资源链接）导出为单个 JSON 文件，
           用于换机迁移，或在数据库损坏后恢复。
         </p>
@@ -500,7 +500,7 @@ onMounted(async () => {
           <button class="btn btn-ghost" @click="pickImportFile">从归档导入</button>
         </div>
 
-        <p class="mt-3 text-[11.5px] leading-relaxed text-ink-3">
+        <p class="mt-3 text-[13px] leading-relaxed text-ink-3">
           归档只包含元数据。封面图片与存档 zip 归档位于应用数据目录，
           换机时需要另外复制 <code class="text-accent">covers/</code> 与
           <code class="text-accent">saves/</code>。
@@ -509,7 +509,7 @@ onMounted(async () => {
 
       <!-- 分类 / 标签管理 -->
       <section class="panel p-5">
-        <h2 class="mb-4 text-[13.5px] font-semibold text-ink">分类与标签管理</h2>
+        <h2 class="mb-4 text-[15px] font-semibold text-ink">分类与标签管理</h2>
 
         <div class="grid grid-cols-2 gap-6">
           <div>
@@ -521,22 +521,22 @@ onMounted(async () => {
                 class="flex items-center gap-2 rounded-lg bg-surface-2 px-3 py-2"
               >
                 <span class="h-1.5 w-1.5 rounded-full bg-accent" />
-                <span class="min-w-0 flex-1 truncate text-[12.5px] text-ink">{{ category.name }}</span>
-                <span class="text-[11px] text-ink-3">{{ category.gameCount }}</span>
+                <span class="min-w-0 flex-1 truncate text-[14px] text-ink">{{ category.name }}</span>
+                <span class="text-[12.5px] text-ink-3">{{ category.gameCount }}</span>
                 <button
-                  class="text-[11px] text-ink-3 transition hover:text-accent"
+                  class="text-[12.5px] text-ink-3 transition hover:text-accent"
                   @click="renameCategory(category.id, category.name)"
                 >
                   改名
                 </button>
                 <button
-                  class="text-[11px] text-ink-3 transition hover:text-danger"
+                  class="text-[12.5px] text-ink-3 transition hover:text-danger"
                   @click="library.removeCategory(category.id)"
                 >
                   删除
                 </button>
               </div>
-              <p v-if="!library.categories.length" class="py-1 text-[11.5px] text-ink-3">
+              <p v-if="!library.categories.length" class="py-1 text-[13px] text-ink-3">
                 在左侧边栏点 + 新建分类
               </p>
             </div>
@@ -554,7 +554,7 @@ onMounted(async () => {
                 <template v-if="editingTag === tag.id">
                   <input
                     v-model="tagDraft"
-                    class="w-[80px] bg-transparent text-[11.5px] outline-none"
+                    class="w-[80px] bg-transparent text-[13px] outline-none"
                     autofocus
                     @keydown.enter="renameTag(tag.id, tagDraft)"
                     @blur="editingTag = null"
@@ -562,7 +562,7 @@ onMounted(async () => {
                 </template>
                 <template v-else>
                   <button
-                    class="text-[11.5px]"
+                    class="text-[13px]"
                     :aria-label="`重命名标签 ${tag.name}`"
                     :title="`重命名「${tag.name}」`"
                     @click="editingTag = tag.id; tagDraft = tag.name"
@@ -582,7 +582,7 @@ onMounted(async () => {
                   </button>
                 </template>
               </span>
-              <p v-if="!library.tags.length" class="py-1 text-[11.5px] text-ink-3">
+              <p v-if="!library.tags.length" class="py-1 text-[13px] text-ink-3">
                 还没有标签，可在编辑游戏时添加
               </p>
             </div>
@@ -592,26 +592,26 @@ onMounted(async () => {
 
       <!-- 数据 -->
       <section class="panel p-5">
-        <h2 class="mb-4 text-[13.5px] font-semibold text-ink">数据与存储</h2>
+        <h2 class="mb-4 text-[15px] font-semibold text-ink">数据与存储</h2>
 
         <div v-if="settings.storage" class="mb-4 grid grid-cols-3 gap-3">
           <div class="rounded-xl bg-surface-2 p-3">
-            <p class="text-[11px] text-ink-3">数据库</p>
-            <p class="mt-1 text-[14px] font-semibold text-ink">{{ settings.storage.dbSizeHuman }}</p>
+            <p class="text-[12.5px] text-ink-3">数据库</p>
+            <p class="mt-1 text-[15.5px] font-semibold text-ink">{{ settings.storage.dbSizeHuman }}</p>
           </div>
           <div class="rounded-xl bg-surface-2 p-3">
-            <p class="text-[11px] text-ink-3">封面缓存</p>
-            <p class="mt-1 text-[14px] font-semibold text-ink">{{ settings.storage.coversSizeHuman }}</p>
+            <p class="text-[12.5px] text-ink-3">封面缓存</p>
+            <p class="mt-1 text-[15.5px] font-semibold text-ink">{{ settings.storage.coversSizeHuman }}</p>
           </div>
           <div class="rounded-xl bg-surface-2 p-3">
-            <p class="text-[11px] text-ink-3">存档备份</p>
-            <p class="mt-1 text-[14px] font-semibold text-ink">{{ settings.storage.backupsSizeHuman }}</p>
+            <p class="text-[12.5px] text-ink-3">存档备份</p>
+            <p class="mt-1 text-[15.5px] font-semibold text-ink">{{ settings.storage.backupsSizeHuman }}</p>
           </div>
         </div>
 
         <div class="mb-4 rounded-xl bg-surface-2 p-3">
-          <p class="text-[11px] text-ink-3">应用数据目录</p>
-          <p class="mt-0.5 font-mono text-[11.5px] break-all text-ink-2">
+          <p class="text-[12.5px] text-ink-3">应用数据目录</p>
+          <p class="mt-0.5 font-mono text-[13px] break-all text-ink-2">
             {{ settings.storage?.dataDir }}
           </p>
         </div>

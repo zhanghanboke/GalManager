@@ -85,7 +85,7 @@ function onRowClick(game: Game) {
 
 <template>
   <div class="overflow-hidden rounded-xl border border-line-soft">
-    <table class="w-full border-collapse text-[12.5px]">
+    <table class="w-full border-collapse text-[14px]">
       <thead>
         <tr class="bg-surface-2/70 text-ink-3">
           <th v-if="selectionMode" scope="col" class="w-9 px-2.5 py-2">
@@ -177,7 +177,7 @@ function onRowClick(game: Game) {
               />
               <span
                 v-else
-                class="absolute inset-0 flex items-center justify-center text-[13px] font-semibold text-ink-3"
+                class="absolute inset-0 flex items-center justify-center text-[14.5px] font-semibold text-ink-3"
                 aria-hidden="true"
               >
                 {{ initialOf(game) }}
@@ -197,20 +197,20 @@ function onRowClick(game: Game) {
               <span class="truncate font-medium text-ink" :title="game.title">{{ game.title }}</span>
               <span
                 v-if="game.favorite === 1"
-                class="shrink-0 text-[11px] text-amber"
+                class="shrink-0 text-[12.5px] text-amber"
                 aria-label="已收藏"
                 title="已收藏"
                 >★</span
               >
             </div>
             <div v-if="game.developer || game.tags.length" class="mt-0.5 flex items-center gap-1.5">
-              <span v-if="game.developer" class="truncate text-[11px] text-ink-3">{{
+              <span v-if="game.developer" class="truncate text-[12.5px] text-ink-3">{{
                 game.developer
               }}</span>
               <span
                 v-for="tag in game.tags.slice(0, 3)"
                 :key="tag.id"
-                class="shrink-0 rounded px-1 text-[10.5px] text-ink-3"
+                class="shrink-0 rounded px-1 text-[12px] text-ink-3"
                 :style="{ background: (tag.color ?? '#8a7d6d') + '22' }"
                 >{{ tag.name }}</span
               >
