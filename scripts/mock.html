@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>GalManager · 演示数据</title>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script>
+      /* ------------------------------------------------------------------
+         仅供截图使用的 Tauri IPC Mock。
+         在浏览器（而非 Tauri WebView）中渲染前端，注入一份演示数据，
+         以便在无法启动真实窗口的环境下产出 README 配图。
+         不参与生产构建：该文件不会被 vite build 引用。
+         ------------------------------------------------------------------ */
+
+      const cover = (title, from, to) => {
+        const initial = title.trim().charAt(0);
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${from}"/>
+              <stop offset="100%" stop-color="${to}"/>
+            </linearGradient>
+          </defs>
+          <rect width="300" height="400" fill="url(#g)"/>
+          <circle cx="235" cy="70" r="120" fill="#ffffff" opacity="0.07"/>
+          <circle cx="60" cy="350" r="90" fill="#000000" opacity="0.12"/>
+          <text x="150" y="205" font-family="sans-serif" font-size="118" font-weight="700"
+                fill="#ffffff" opacity="0.22" text-anchor="middle">${initial}</text>
+          <text x="150" y="300" font-family="sans-serif" font-size="21" font-weight="600"
+                fill="#ffffff" opacity="0.92" text-anchor="middle">${title}</text>
+          <text x="150" y="330" font-family="sans-serif" font-size="12"
+                fill="#ffffff" opacity="0.55" text-anchor="middle">GALGAME</text>
+        </svg>`;
+        return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+      };
+
+      const RAW = [
+        ["千恋万花", "Senren * Banka", "kirikiri", "completed", 1, 6420, "柚子社", "2020-05-29", ["纯爱", "和风", "汉化"], 95],
+        ["ATRI -My Dear Moments-", "", "unity", "completed", 1, 3180, "Frontwing", "2020-06-18", ["科幻", "催泪"], 92],
+        ["樱之诗", "サクラノ詩", "kirikiri", "playing", 0, 8760, "枕", "2015-10-23", ["文艺", "长篇"], 98],
+        ["Summer Pockets REFLECTION BLUE", "", "unity", "playing", 1, 5240, "Key", "2020-06-26", ["夏日", "催泪", "汉化"], 96],
+        ["素晴日", "素晴らしき日々", "kirikiri", "completed", 0, 4020, "ケロQ", "2010-03-26", ["悬疑", "哲学"], 94],
+        ["苍之彼方的四重奏", "蒼の彼方のフォーリズム", "siglus", "completed", 1, 4980, "sprite", "2014-11-28", ["竞技", "热血"], 91],
+        ["近月少女的礼仪", "月に寄りそう乙女の作法", "kirikiri", "on_hold", 0, 1560, "Navel", "2012-10-26", ["女装", "大小姐"], 88],
+        ["美好的每一天", "Wonderful Everyday", "kirikiri", "unplayed", 0, 0, "ケロQ", "2010-03-26", ["悬疑"], -1],
+        ["月姬", "月姫", "nscripter", "completed", 0, 2340, "TYPE-MOON", "2000-12-29", ["经典", "吸血鬼"], 90],
+        ["Fate/stay night", "", "kirikiri", "completed", 1, 7860, "TYPE-MOON", "2004-01-30", ["经典", "长篇"], 93],
+        ["白色相簿2", "WHITE ALBUM2", "kirikiri", "playing", 0, 6120, "Leaf", "2010-03-26", ["催泪", "音乐"], 97],
+        ["ISLAND", "", "unity", "dropped", 0, 480, "Frontwing", "2016-04-28", ["悬疑", "科幻"], 80],
+        ["纸上的魔法使", "紙の上の魔法使い", "kirikiri", "completed", 0, 2940, "ういんどみるOasis", "2014-11-28", ["幻想"], 89],
+        ["金辉恋曲四重奏", "金色ラブリッチェ", "kirikiri", "playing", 1, 4260, "SAGA PLANETS", "2017-12-22", ["校园", "汉化"], 92],
+        ["爱上火车", "まいてつ", "kirikiri", "unplayed", 0, 0, "Lose", "2016-03-25", ["铁路", "治愈"], -1],
+        ["CLANNAD", "", "reallive", "completed", 1, 9240, "Key", "2004-04-28", ["经典", "催泪"], 99],
+      ];
+
+      const PALETTES = [
+        ["#3b2f63", "#6d4b8f"],
+        ["#2a4a5e", "#3f7d8c"],
+        ["#5e2f45", "#8f4b6d"],
+        ["#3f4a2a", "#6d8c3f"],
+        ["#5e4a2a", "#8c6d3f"],
+        ["#2f3b5e", "#4b5d8f"],
+        ["#4a2f5e", "#7d4b8f"],
+        ["#2f5e52", "#4b8f7d"],
+      ];
+
+      const games = RAW.map((row, i) => {
+        const [title, original, engine, status, favorite, seconds, developer, release, tags, rating] = row;
+        const [from, to] = PALETTES[i % PALETTES.length];
+        return {
+          id: i + 1,
+          title,
+          originalTitle: original || null,
+          path: `D:\\Galgame\\${title.replace(/[\\/:*?"<>|]/g, "_")}`,
+          executable: `${title.slice(0, 6)}.exe`,
+          args: null,
+          coverPath: cover(title, from, to),
+          engine,
+          engineConfidence: 70 + (i % 4) * 8,
+          categoryId: [1, 1, 2, 1, 2, 3, 2, null, 4, 4, 2, 3, 2, 1, 3, 4][i] ?? null,
+          playStatus: status,
+          favorite,
+          rating,
+          leLaunch: engine === "kirikiri" || engine === "siglus" ? 1 : 0,
+          leLocale: "ja-JP",
+          totalPlaySeconds: seconds * 60,
+          lastPlayedAt: seconds > 0 ? `2026-09-${String(24 - (i % 12)).padStart(2, "0")} 21:${String(10 + (i % 45)).padStart(2, "0")}:00` : null,
+          releaseDate: release,
+          developer,
+          description:
+            `${developer} 出品的视觉小说作品，${release} 发售。\n\n` +
+            `本作为 GalManager 演示数据，用于展示游戏详情页的排版效果。`,
+          notes: null,
+          savePath: null,
+          sortOrder: i + 1,
+          createdAt: `2026-0${1 + (i % 8)}-1${i % 9} 20:30:00`,
+          updatedAt: "2026-09-24 21:30:00",
+          tags: tags.map((name, ti) => ({ id: 100 + i * 5 + ti, name, color: null, gameCount: 3 + ti })),
+          sessionCount: 2 + (i % 9),
+          saveCount: i % 5,
+        };
+      });
+
+      const categories = [
+        { id: 1, name: "已通关", icon: null, sortOrder: 1, gameCount: 0 },
+        { id: 2, name: "在玩中", icon: null, sortOrder: 2, gameCount: 0 },
+        { id: 3, name: "待开坑", icon: null, sortOrder: 3, gameCount: 0 },
+        { id: 4, name: "经典老作", icon: null, sortOrder: 4, gameCount: 0 },
+      ];
+      for (const c of categories) {
+        c.gameCount = games.filter((g) => g.categoryId === c.id).length;
+      }
+
+      const tagMap = new Map();
+      for (const g of games) {
+        for (const t of g.tags) {
+          const entry = tagMap.get(t.name) ?? { id: t.id, name: t.name, color: null, gameCount: 0 };
+          entry.gameCount += 1;
+          tagMap.set(t.name, entry);
+        }
+      }
+      const tags = [...tagMap.values()].sort((a, b) => b.gameCount - a.gameCount);
+
+      const settings = {
+        le_path: "C:\\Locale Emulator\\LEProc.exe",
+        le_args_template: "{exe}",
+        default_le_locale: "ja-JP",
+        save_backup_root: "D:\\Galgame\\_Backups",
+        scan_roots: '["D:\\\\Galgame"]',
+        scan_max_depth: "3",
+        grid_size: "md",
+        sort_by: "title",
+        sort_desc: "false",
+        minimize_to_tray: "true",
+        close_to_tray: "true",
+        auto_scan_on_start: "false",
+        auto_backup_saves: "false",
+        show_uncategorized: "true",
+      };
+
+      const sessions = (gameId) =>
+        Array.from({ length: 5 }, (_, i) => ({
+          id: gameId * 100 + i,
+          gameId,
+          startedAt: `2026-09-${String(20 - i * 3).padStart(2, "0")} 20:${String(15 + i * 7).padStart(2, "0")}:00`,
+          endedAt: `2026-09-${String(20 - i * 3).padStart(2, "0")} 22:${String(5 + i * 3).padStart(2, "0")}:00`,
+          durationSeconds: 4200 + i * 1500,
+          note: null,
+          gameTitle: games.find((g) => g.id === gameId)?.title ?? null,
+        }));
+
+      const daily = Array.from({ length: 30 }, (_, i) => {
+        const d = new Date(2026, 7, 27 + i);
+        const active = i % 7 !== 3 && i % 11 !== 5;
+        return {
+          date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+          seconds: active ? Math.round((3600 + Math.random() * 9000) / 60) * 60 : 0,
+          sessions: active ? 1 + (i % 3) : 0,
+        };
+      });
+
+      const monthly = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map((_, m) =>
+        m <= 8 ? Math.round((20000 + Math.random() * 60000) / 60) * 60 : 0,
+      );
+      const weekday = [4, 3, 4, 3, 5, 9, 8].map((n) => n * 3600 * 3);
+      const ranking = games
+        .filter((g) => g.totalPlaySeconds > 0)
+        .sort((a, b) => b.totalPlaySeconds - a.totalPlaySeconds)
+        .slice(0, 10)
+        .map((g) => ({
+          gameId: g.id,
+          title: g.title,
+          coverPath: g.coverPath,
+          seconds: g.totalPlaySeconds,
+          sessions: g.sessionCount,
+        }));
+
+      const saveSlots = [
+        {
+          id: 1,
+          gameId: 1,
+          slotName: "真结局前",
+          engine: "kirikiri",
+          sourcePath: "C:\\Users\\zhanghan\\AppData\\Roaming\\Yuzusoft\\SenrenBanka",
+          backupPath: "D:\\Galgame\\_Backups\\1_千恋万花\\真结局前_20260920_213045.zip",
+          sizeBytes: 2_418_688,
+          fileCount: 12,
+          remark: "存档已读，勿覆盖",
+          createdAt: "2026-09-20 21:30:45",
+        },
+        {
+          id: 2,
+          gameId: 1,
+          slotName: "自动备份",
+          engine: "kirikiri",
+          sourcePath: "C:\\Users\\zhanghan\\AppData\\Roaming\\Yuzusoft\\SenrenBanka",
+          backupPath: "D:\\Galgame\\_Backups\\1_千恋万花\\自动备份_20260924_220118.zip",
+          sizeBytes: 2_502_656,
+          fileCount: 12,
+          remark: null,
+          createdAt: "2026-09-24 22:01:18",
+        },
+        {
+          id: 3,
+          gameId: 1,
+          slotName: "全 CG 解锁",
+          engine: "kirikiri",
+          sourcePath: "C:\\Users\\zhanghan\\AppData\\Roaming\\Yuzusoft\\SenrenBanka",
+          backupPath: "D:\\Galgame\\_Backups\\1_千恋万花\\全CG解锁_20260912_190233.zip",
+          sizeBytes: 2_385_920,
+          fileCount: 13,
+          remark: "含全 CG 存档",
+          createdAt: "2026-09-12 19:02:33",
+        },
+      ];
+
+      const probe = {
+        engine: "kirikiri",
+        engineLabel: "吉里吉里 / KAG",
+        confidence: 85,
+        paths: [
+          {
+            path: "C:\\Users\\zhanghan\\AppData\\Roaming\\Yuzusoft\\SenrenBanka",
+            exists: true,
+            fileCount: 12,
+            sizeBytes: 2_418_688,
+            source: "%APPDATA%/<exe>",
+          },
+          {
+            path: "D:\\Galgame\\千恋万花\\savedata",
+            exists: true,
+            fileCount: 4,
+            sizeBytes: 614_400,
+            source: "游戏目录/savedata",
+          },
+          {
+            path: "D:\\Galgame\\千恋万花\\save",
+            exists: false,
+            fileCount: 0,
+            sizeBytes: 0,
+            source: "游戏目录/save",
+          },
+        ],
+      };
+
+      const overview = {
+        totalGames: games.length,
+        totalPlaySeconds: games.reduce((s, g) => s + g.totalPlaySeconds, 0),
+        completedGames: games.filter((g) => g.playStatus === "completed").length,
+        playingGames: games.filter((g) => g.playStatus === "playing").length,
+        favoriteGames: games.filter((g) => g.favorite === 1).length,
+        weekPlaySeconds: 78_600,
+        monthPlaySeconds: 312_400,
+        saveSlotCount: 23,
+      };
+
+      const yearly = {
+        year: 2026,
+        totalSeconds: games.reduce((s, g) => s + g.totalPlaySeconds, 0),
+        totalSessions: 148,
+        activeDays: 213,
+        averageSeconds: 7_920,
+        longestSessionSeconds: 28_440,
+        longestSessionGame: "CLANNAD",
+        topGame: "CLANNAD",
+        completedCount: 9,
+        addedCount: 16,
+        monthly,
+        weekday,
+        daily,
+        ranking,
+      };
+
+      const storage = {
+        dataDir: "C:\\Users\\zhanghan\\AppData\\Roaming\\com.galmanager.app",
+        dbSize: 1_241_088,
+        dbSizeHuman: "1.2 MB",
+        coversSize: 48_234_496,
+        coversSizeHuman: "46.0 MB",
+        backupsSize: 612_368_384,
+        backupsSizeHuman: "584.0 MB",
+        backupRoot: "D:\\Galgame\\_Backups",
+      };
+
+      const appInfo = {
+        name: "GalManager",
+        version: "0.1.0",
+        tauriVersion: "2.11.6",
+        os: "windows",
+        arch: "x86_64",
+        dataDir: storage.dataDir,
+      };
+
+      const engineDistribution = [
+        ["kirikiri", 9],
+        ["unity", 3],
+        ["siglus", 1],
+        ["reallive", 1],
+        ["nscripter", 1],
+        ["renpy", 1],
+      ];
+
+      const notes = [
+        {
+          id: 1,
+          gameId: 1,
+          title: "全线攻略顺序",
+          content:
+            "# 推荐攻略顺序\n\n- 丛雨 → 芳乃 → 茉子 → 蕾娜 → 千咲\n- 每条线结束后记得**手动存档**\n\n---\n\n## 关键分歧点\n\n1. 7 月 12 日选择「跟上去」\n2. 8 月 3 日选择「相信她」\n\n> 真结局需要全 5 线通关后解锁",
+          updatedAt: "2026-09-22 23:14:00",
+          createdAt: "2026-09-10 19:02:00",
+        },
+        {
+          id: 2,
+          gameId: 1,
+          title: "全 CG 解锁条件",
+          content: "## 需完成的内容\n\n- 全 5 线通关\n- 所有分支选项都选过一次\n- 鉴赏模式里点击右下角的小图标",
+          updatedAt: "2026-09-18 21:40:00",
+          createdAt: "2026-09-18 21:40:00",
+        },
+      ];
+
+      const patches = [
+        {
+          id: 1,
+          gameId: 1,
+          name: "官方简体中文补丁",
+          version: "1.02",
+          patchType: "translation",
+          filePath: "D:\\Galgame\\_Patches\\SenrenBanka_CHS_v102.exe",
+          url: "https://example.com/patch",
+          installed: 1,
+          remark: "需先安装原版 1.00",
+          createdAt: "2026-09-05 18:20:00",
+        },
+        {
+          id: 2,
+          gameId: 1,
+          name: "全 CG 解锁存档",
+          version: null,
+          patchType: "other",
+          filePath: null,
+          url: "https://example.com/save",
+          installed: 0,
+          remark: "覆盖前先备份",
+          createdAt: "2026-09-12 20:11:00",
+        },
+      ];
+
+      const links = [
+        { id: 1, gameId: 1, title: "千恋万花 攻略 Wiki", url: "https://example.com/wiki", kind: "wiki", remark: "分支条件很全", createdAt: "2026-09-06 12:00:00" },
+        { id: 2, gameId: 1, title: "B站 全流程实况", url: "https://example.com/video", kind: "video", remark: null, createdAt: "2026-09-08 22:30:00" },
+        { id: 3, gameId: 1, title: "官方中文补丁发布页", url: "https://example.com/patch-page", kind: "patch", remark: "v1.02 修复了乱码", createdAt: "2026-09-05 18:00:00" },
+      ];
+
+      const HANDLERS = {
+        list_games: (args) => {
+          const f = args?.filter ?? {};
+          let out = games.slice();
+          if (f.categoryId === -1) out = out.filter((g) => g.categoryId === null);
+          else if (f.categoryId != null) out = out.filter((g) => g.categoryId === f.categoryId);
+          if (f.favoriteOnly) out = out.filter((g) => g.favorite === 1);
+          if (f.statuses?.length) out = out.filter((g) => f.statuses.includes(g.playStatus));
+          if (f.keyword) {
+            const kw = String(f.keyword).toLowerCase();
+            out = out.filter(
+              (g) =>
+                g.title.toLowerCase().includes(kw) ||
+                (g.originalTitle ?? "").toLowerCase().includes(kw) ||
+                (g.developer ?? "").toLowerCase().includes(kw),
+            );
+          }
+          for (const t of f.tags ?? []) out = out.filter((g) => g.tags.some((x) => x.name === t));
+          const key = f.sortBy ?? "title";
+          const dir = f.sortDesc ? -1 : 1;
+          out.sort((a, b) => {
+            if (key === "playtime") return (a.totalPlaySeconds - b.totalPlaySeconds) * dir;
+            if (key === "lastPlayed")
+              return String(a.lastPlayedAt ?? "0").localeCompare(String(b.lastPlayedAt ?? "0")) * dir;
+            return a.title.localeCompare(b.title, "zh-Hans-CN") * dir;
+          });
+          return out;
+        },
+        get_game: (args) => games.find((g) => g.id === args.id) ?? games[0],
+        list_categories: () => categories,
+        list_tags: () => tags,
+        list_engines: () => [
+          { id: "kirikiri", label: "吉里吉里 / KAG", saveHint: "%APPDATA%\\<厂商>\\<游戏> 或游戏目录 savedata" },
+          { id: "renpy", label: "Ren'Py", saveHint: "%APPDATA%\\RenPy\\<游戏>" },
+          { id: "unity", label: "Unity", saveHint: "%USERPROFILE%\\AppData\\LocalLow\\<公司>\\<产品>" },
+          { id: "rpgmaker", label: "RPG Maker (XP/VX/VA)", saveHint: "游戏目录 Save*.rvdata" },
+          { id: "rpgmaker_mv", label: "RPG Maker MV/MZ", saveHint: "www\\save 或 %LOCALAPPDATA%\\<游戏>" },
+          { id: "nscripter", label: "NScripter", saveHint: "游戏目录 save*.dat" },
+          { id: "siglus", label: "SiglusEngine", saveHint: "%APPDATA%\\<游戏> 或游戏目录 savedata" },
+          { id: "reallive", label: "RealLive", saveHint: "游戏目录 save*.sav" },
+          { id: "bgi", label: "BGI / Ethornell", saveHint: "游戏目录 save 或 %APPDATA%\\<游戏>" },
+          { id: "artemis", label: "Artemis Engine", saveHint: "游戏目录 savedata" },
+          { id: "catystem", label: "CatSystem2", saveHint: "游戏目录 save 或 %APPDATA%\\<游戏>" },
+          { id: "wolfrpg", label: "WOLF RPG Editor", saveHint: "游戏目录 Data\\SaveData" },
+          { id: "majiro", label: "Majiro", saveHint: "游戏目录 save" },
+          { id: "systemnnn", label: "SystemNNN", saveHint: "游戏目录 save" },
+          { id: "unreal", label: "Unreal Engine", saveHint: "%LOCALAPPDATA%\\<游戏>\\Saved" },
+          { id: "other", label: "未知 / 其他", saveHint: "需手动指定" },
+        ],
+        detect_engine: () => ({
+          id: "kirikiri",
+          label: "吉里吉里 / KAG",
+          confidence: 85,
+          evidence: ["存在文件特征 .xp3", "存在目录 savedata"],
+        }),
+        running_games: () => [],
+        get_settings: () => settings,
+        app_info: () => appInfo,
+        storage_info: () => storage,
+        stats_overview: () => overview,
+        stats_daily: () => daily,
+        stats_ranking: () => ranking,
+        stats_yearly_report: () => yearly,
+        stats_play_years: () => [2026, 2025],
+        stats_engine_distribution: () => engineDistribution,
+        stats_recent_sessions: () => sessions(1),
+        list_game_sessions: (args) => sessions(args.gameId ?? 1),
+        probe_save_paths: () => probe,
+        list_save_slots: () => saveSlots,
+        list_notes: () => notes,
+        list_patches: () => patches,
+        list_links: () => links,
+        detect_locale_emulator: () => settings.le_path,
+        "plugin:event|listen": () => 1,
+        "plugin:event|unlisten": () => null,
+        "plugin:window-state|save_window_state": () => null,
+      };
+
+      window.__TAURI_INTERNALS__ = {
+        metadata: {
+          currentWindow: { label: "main" },
+          currentWebview: { label: "main" },
+        },
+        transformCallback(cb) {
+          const id = Math.floor(Math.random() * 1e9);
+          window[`_${id}`] = cb;
+          return id;
+        },
+        convertFileSrc(path) {
+          return path;
+        },
+        async invoke(cmd, args) {
+          const handler = HANDLERS[cmd];
+          if (!handler) {
+            console.info("[mock] 未实现的命令:", cmd, args);
+            return null;
+          }
+          return handler(args ?? {});
+        },
+      };
+    </script>
+
+    <script type="module" src="/src/main.ts"></script>
+
+    <script>
+      /* ------------------------------------------------------------------
+         截图辅助：通过 URL 参数驱动界面状态。
+           ?tab=saves      在详情页自动切到「存档」标签
+           ?scroll=600     渲染完成后把主区域向下滚动指定像素
+         仅用于产出 README 配图。
+         ------------------------------------------------------------------ */
+      (() => {
+        const params = new URLSearchParams(location.search);
+        const wantTab = params.get("tab");
+        const scroll = Number(params.get("scroll") || 0);
+
+        const LABELS = {
+          overview: "概览",
+          saves: "存档",
+          notes: "攻略笔记",
+          patches: "补丁",
+          links: "资源链接",
+          timeline: "游玩记录",
+        };
+
+        if (wantTab) {
+          const label = LABELS[wantTab] ?? wantTab;
+          let tries = 0;
+          const timer = setInterval(() => {
+            tries += 1;
+            const btn = [...document.querySelectorAll("button")].find(
+              (b) => b.textContent.trim() === label,
+            );
+            if (btn) {
+              btn.click();
+              clearInterval(timer);
+            }
+            if (tries > 200) clearInterval(timer);
+          }, 50);
+        }
+
+        if (scroll) {
+          const timer = setInterval(() => {
+            const main = document.querySelector("main");
+            const target =
+              (main && main.querySelector(".scroll-y")) ?? document.scrollingElement;
+            if (target && target.scrollHeight > target.clientHeight) {
+              target.scrollTop = scroll;
+              clearInterval(timer);
+            }
+          }, 50);
+          setTimeout(() => clearInterval(timer), 9000);
+        }
+      })();
+    </script>
+  </body>
+</html>

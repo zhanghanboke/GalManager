@@ -1,0 +1,67 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "GalManager",
+  "mainBinaryName": "GalManager",
+  "version": "0.1.0",
+  "identifier": "com.galmanager.app",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "GalManager",
+        "width": 1360,
+        "height": 860,
+        "minWidth": 1000,
+        "minHeight": 640,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "dragDropEnabled": true,
+        "visible": false,
+        "decorations": true,
+        "theme": "Dark"
+      }
+    ],
+    "security": {
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["**"]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "msi"],
+    "publisher": "GalManager",
+    "copyright": "Copyright © 2026 GalManager",
+    "category": "Utility",
+    "shortDescription": "Galgame 专属桌面管理器",
+    "longDescription": "GalManager 是一款面向 Galgame 玩家的本地游戏库管理器，支持封面墙浏览、引擎识别、存档备份还原、Locale Emulator 一键转区启动与游玩时长统计。",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "languages": ["SimpChinese", "English"],
+        "displayLanguageSelector": true,
+        "installMode": "currentUser"
+      },
+      "wix": {
+        "language": ["zh-CN"]
+      }
+    }
+  }
+}

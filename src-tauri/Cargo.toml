@@ -1,0 +1,73 @@
+[package]
+name = "galmanager"
+version = "0.1.0"
+description = "Galgame 专属桌面管理器"
+authors = ["GalManager"]
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "galmanager_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+# tauri-utils 以 `preserve_order` 特性引入 schemars 0.8，而 schemars 又依赖 indexmap 1.x；
+# 若图中无人开启 indexmap 的 `std` 特性，`IndexMap<K, V>` 会因缺少默认类型参数而编译失败。
+# 这里显式开启该特性（特性是全局合并的），属于上游依赖问题的最小绕行方案。
+indexmap = { version = "1.9", features = ["std"] }
+
+[dependencies]
+# Tauri 核心与官方插件
+tauri = { version = "2", features = ["tray-icon", "protocol-asset"] }
+tauri-plugin-opener = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-window-state = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-log = "2"
+tauri-plugin-autostart = "2"
+
+# 序列化
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# 数据库（bundled：静态编译 SQLite，用户无需额外安装）
+rusqlite = { version = "0.32", features = ["bundled", "chrono"] }
+
+# 文件系统与压缩
+walkdir = "2"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+
+# 时间与并发
+chrono = { version = "0.4", features = ["serde"] }
+parking_lot = "0.12"
+
+# 进程监控（用于游玩时长统计）
+sysinfo = "0.32"
+
+# 错误处理
+thiserror = "2"
+
+# 日志
+log = "0.4"
+
+# Windows 专属：提权启动与快捷方式解析
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_UI_Shell",
+    "Win32_System_Com",
+    "Win32_System_Threading",
+    "Win32_UI_WindowsAndMessaging",
+] }
+
+# Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
