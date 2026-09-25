@@ -178,6 +178,21 @@ pub struct GameFilter {
     pub sort_desc: bool,
 }
 
+/// 扫描时发现的「可能重复」。
+///
+/// 与 `already_imported`（路径归一化后落在已入库目录内）不同，
+/// 这里描述的是**路径不同但标题一致**的情况：可能是同一个游戏被换了目录/换了盘，
+/// 也可能是有意分开的两份。因此只作为提示，不阻止导入。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DuplicateHint {
+    /// 库中那条游戏的 id
+    pub game_id: i64,
+    pub title: String,
+    /// 库中那条游戏的目录，供用户核对是否真的是同一个
+    pub path: Option<String>,
+}
+
 /// 扫描得到的候选游戏
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -193,6 +208,9 @@ pub struct ScanCandidate {
     pub engine_confidence: i64,
     /// 是否已在库中
     pub already_imported: bool,
+    /// 路径不同但疑似同一个游戏时的提示
+    #[serde(default)]
+    pub possible_duplicate: Option<DuplicateHint>,
 }
 
 /// 扫描入参

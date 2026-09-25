@@ -6,6 +6,7 @@ import {
   launchApi,
   settingsApi,
   type AppInfo,
+  type AutoBackupReport,
   type RunningGame,
   type SettingsMap,
   type StorageInfo,
@@ -73,6 +74,18 @@ export const useSettingsStore = defineStore("settings", () => {
         toast.info(`本次游玩 ${Math.round(seconds / 60)} 分钟，已计入统计`);
       }
       onGameExited?.(gameId, seconds);
+    });
+
+    // 定时自动备份在后台线程里跑完会广播结果。
+    // 只在真的写了新归档或出现失败时打扰用户，全部无变化时保持安静。
+    await listen<AutoBackupReport>("auto-backup-finished", (event) => {
+      const report = event.payload;
+      if (report.backedUp > 0) {
+        toast.success(`定时自动备份：新增 ${report.backedUp} 份存档备份`);
+      } else if (report.failed > 0) {
+        toast.warn(`定时自动备份完成，${report.failed} 个游戏备份失败`);
+      }
+      void refreshStorage();
     });
   }
 

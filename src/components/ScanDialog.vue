@@ -4,6 +4,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import BaseModal from "./BaseModal.vue";
 import { libraryApi, scanApi, type GameInput, type ScanCandidate } from "../api";
 import { useLibraryStore } from "../stores/library";
+import { confirmDialog } from "../composables/useConfirm";
 import { errorText, toast } from "../utils/toast";
 
 const props = withDefaults(
@@ -35,6 +36,16 @@ const scanned = ref(false);
 
 const importable = computed(() =>
   candidates.value.filter((c) => checked.value.has(c.path)),
+);
+
+/** 默认勾选的候选：既不在库中，也不是疑似重复 */
+const autoImportable = computed(() =>
+  candidates.value.filter((c) => !c.alreadyImported && !c.possibleDuplicate),
+);
+
+/** 疑似重复的数量（路径不同但标题与库中一致） */
+const duplicateCount = computed(
+  () => candidates.value.filter((c) => c.possibleDuplicate).length,
 );
 
 /** 参与扫描的全部根目录（手动输入的 + 拖入的） */
@@ -90,9 +101,9 @@ async function runScan() {
 
     candidates.value = result;
     scanned.value = true;
-    // 默认勾选「未导入过」的项
+    // 默认只勾选「既不在库中、也不疑似重复」的项
     checked.value = new Set(
-      result.filter((c) => !c.alreadyImported).map((c) => c.path),
+      result.filter((c) => !c.alreadyImported && !c.possibleDuplicate).map((c) => c.path),
     );
     if (!result.length) {
       toast.info(
@@ -101,7 +112,14 @@ async function runScan() {
           : "该目录下没有发现游戏，试试调整扫描模式或加大深度",
       );
     } else {
-      toast.success(`发现 ${result.length} 个候选，已默认勾选可导入项`);
+      const suspicious = result.filter(
+        (c) => c.possibleDuplicate || c.alreadyImported,
+      ).length;
+      toast.success(
+        suspicious
+          ? `发现 ${result.length} 个候选，其中 ${suspicious} 个需确认，已默认不勾选`
+          : `发现 ${result.length} 个候选，已默认勾选可导入项`,
+      );
     }
   } catch (error) {
     toast.error(errorText(error));
@@ -118,9 +136,7 @@ function toggle(path: string) {
 }
 
 function toggleAll(value: boolean) {
-  checked.value = value
-    ? new Set(candidates.value.filter((c) => !c.alreadyImported).map((c) => c.path))
-    : new Set();
+  checked.value = value ? new Set(autoImportable.value.map((c) => c.path)) : new Set();
 }
 
 async function doImport() {
@@ -129,6 +145,24 @@ async function doImport() {
     toast.warn("请至少勾选一个游戏");
     return;
   }
+
+  // 勾了疑似重复项时再确认一次：库里出现两份同一个游戏，
+  // 游玩时长与存档备份会各自独立，之后很难合并回来。
+  const duplicates = picked.filter((c) => c.possibleDuplicate);
+  if (duplicates.length) {
+    const lines = duplicates
+      .map((c) => `· ${c.name}（库中已有《${c.possibleDuplicate!.title}》）`)
+      .join("\n");
+    const ok = await confirmDialog({
+      title: "确认导入疑似重复的游戏",
+      message:
+        `以下 ${duplicates.length} 个候选与库中已有游戏标题相同，可能是同一个游戏：\n\n` +
+        `${lines}\n\n继续导入会在库中产生两份记录，请确认确实需要分开管理。`,
+      confirmText: "仍然导入",
+    });
+    if (!ok) return;
+  }
+
   importing.value = true;
   try {
     const inputs: GameInput[] = await scanApi.buildInputs(picked);
@@ -267,16 +301,18 @@ const engineBadge = (candidate: ScanCandidate) =>
 
     <!-- 结果列表 -->
     <section v-if="scanned && candidates.length" class="mt-4">
-      <div class="mb-2 flex items-center gap-3">
+      <div class="mb-2 flex flex-wrap items-center gap-3">
         <label class="flex cursor-pointer items-center gap-2 text-[12px] text-ink-2">
           <input
             type="checkbox"
-           
-            :checked="checked.size > 0 && checked.size === candidates.filter((c) => !c.alreadyImported).length"
+            :checked="checked.size > 0 && checked.size === autoImportable.length"
             @change="toggleAll(($event.target as HTMLInputElement).checked)"
           />
           全选可导入项
         </label>
+        <span v-if="duplicateCount" class="text-[11.5px] text-amber">
+          {{ duplicateCount }} 个疑似重复已默认不勾选，请核对后再决定
+        </span>
       </div>
 
       <div class="max-h-[300px] overflow-hidden rounded-xl border border-line">
@@ -285,13 +321,20 @@ const engineBadge = (candidate: ScanCandidate) =>
             v-for="candidate in candidates"
             :key="candidate.path"
             class="flex items-center gap-3 border-b border-line-soft px-3 py-2.5 transition last:border-b-0"
-            :class="candidate.alreadyImported ? 'opacity-45' : 'hover:bg-surface-2'"
+            :class="
+              candidate.alreadyImported
+                ? 'opacity-45'
+                : candidate.possibleDuplicate
+                  ? 'bg-amber/[0.06] hover:bg-amber/[0.1]'
+                  : 'hover:bg-surface-2'
+            "
           >
             <input
               type="checkbox"
               class="shrink-0 "
               :checked="checked.has(candidate.path)"
               :disabled="candidate.alreadyImported"
+              :aria-label="`选择 ${candidate.name}`"
               @change="toggle(candidate.path)"
             />
             <div class="min-w-0 flex-1">
@@ -299,6 +342,13 @@ const engineBadge = (candidate: ScanCandidate) =>
                 {{ candidate.name }}
                 <span v-if="candidate.alreadyImported" class="ml-1.5 text-[11px] font-normal text-ink-3">
                   （已在库中）
+                </span>
+                <span
+                  v-else-if="candidate.possibleDuplicate"
+                  class="ml-1.5 text-[11px] font-normal text-amber"
+                  :title="`库中已有《${candidate.possibleDuplicate.title}》\n目录：${candidate.possibleDuplicate.path ?? '（未记录）'}`"
+                >
+                  （可能重复：库中已有《{{ candidate.possibleDuplicate.title }}》）
                 </span>
               </p>
               <p class="truncate text-[11px] text-ink-3" :title="candidate.path">

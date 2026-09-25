@@ -7,3 +7,4 @@ pub mod saves;
 pub mod scan;
 pub mod settings;
 pub mod stats;
+pub mod transfer;

@@ -476,7 +476,9 @@ fn build_candidate(
         executables,
         engine: engine_id,
         engine_confidence: confidence,
+        // 是否已入库 / 是否疑似重复由命令层结合数据库判定
         already_imported: false,
+        possible_duplicate: None,
     }
 }
 

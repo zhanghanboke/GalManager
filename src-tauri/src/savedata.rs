@@ -69,7 +69,7 @@ fn userprofile() -> Option<PathBuf> {
 }
 
 /// 统计目录内文件数与总字节数（带深度上限，避免扫描失控）
-fn measure_dir(dir: &Path) -> (i64, i64) {
+pub fn measure_dir(dir: &Path) -> (i64, i64) {
     if !dir.is_dir() {
         return (0, 0);
     }

@@ -158,12 +158,14 @@
         scan_roots: '["D:\\\\Galgame"]',
         scan_max_depth: "3",
         grid_size: "md",
+        view_mode: "grid",
         sort_by: "title",
         sort_desc: "false",
         minimize_to_tray: "true",
         close_to_tray: "true",
-        auto_scan_on_start: "false",
         auto_backup_saves: "false",
+        auto_backup_interval_minutes: "180",
+        auto_backup_last_run: "",
         show_uncategorized: "true",
       };
 
@@ -320,6 +322,22 @@
         dataDir: storage.dataDir,
       };
 
+      /* 库归档摘要：与后端 ArchiveSummary 的字段保持一致 */
+      const archiveSummary = {
+        format: "galmanager-library",
+        version: 1,
+        exportedAt: "2026-09-25 21:40:12",
+        appVersion: "0.1.0",
+        gameCount: 17,
+        categoryCount: 4,
+        tagCount: 9,
+        sessionCount: 63,
+        saveSlotCount: 12,
+        patchCount: 6,
+        noteCount: 8,
+        linkCount: 14,
+      };
+
       const engineDistribution = [
         ["kirikiri", 9],
         ["unity", 3],
@@ -447,13 +465,23 @@
             { name: "千恋万花", engine: "kirikiri", engineConfidence: 85 },
             { name: "Summer Pockets REFLECTION BLUE", engine: "siglus", engineConfidence: 72 },
             { name: "ATRI -My Dear Moments-", engine: "unity", engineConfidence: 90 },
+            { name: "白色相簿2", engine: "reallive", engineConfidence: 68 },
           ].map((item, index) => ({
             name: item.name,
             path: `${base}\\${item.name}`,
             executables: [`${item.name}.exe`, "Game.exe"],
             engine: item.engine,
             engineConfidence: item.engineConfidence,
+            // index 2 模拟「路径已在库中」，index 3 模拟「换了目录但标题重复」
             alreadyImported: index === 2,
+            possibleDuplicate:
+              index === 3
+                ? {
+                    gameId: 2,
+                    title: "白色相簿2",
+                    path: "E:\\OldDrive\\白色相簿2",
+                  }
+                : null,
           }));
         },
         build_game_inputs: (args) =>
@@ -491,6 +519,54 @@
         list_patches: () => patches,
         list_links: () => links,
         detect_locale_emulator: () => settings.le_path,
+        // 浏览器 mock 不真正读写文件，只回一份摘要让界面能跑通
+        export_library: (args) => ({
+          path: args.targetPath ?? "mock://galmanager-library.json",
+          bytes: 20_480,
+          summary: archiveSummary,
+        }),
+        inspect_library_archive: () => archiveSummary,
+        import_library: (args) => ({
+          mode: args.mode ?? "merge",
+          importedGames: 3,
+          skippedGames: 1,
+          categories: 1,
+          tags: 2,
+          sessions: 5,
+          saveSlots: 1,
+          patches: 1,
+          notes: 2,
+          links: 3,
+          safetyBackup: args.mode === "replace" ? "mock://galmanager.before_import.db" : null,
+        }),
+        // 文件对话框在浏览器里没有原生实现，返回 null 等同用户取消
+        "plugin:dialog|open": () => null,
+        "plugin:dialog|save": () => null,
+        // 定时自动备份：mock 里直接返回一份结果，方便验证界面与提示
+        auto_backup_status: () => ({
+          enabled: settings.auto_backup_saves === "true",
+          intervalMinutes: Number(settings.auto_backup_interval_minutes) || 180,
+          lastRunAt: settings.auto_backup_last_run || null,
+          trackedGames: 12,
+          running: false,
+        }),
+        run_auto_backup_now: () => {
+          settings.auto_backup_last_run = "2026-09-25 22:40:03";
+          return {
+            checked: 16,
+            backedUp: 3,
+            unchanged: 9,
+            skipped: 4,
+            failed: 0,
+            details: [
+              { gameId: 1, title: "千恋万花", status: "backed_up", message: "已备份 12 个文件" },
+              { gameId: 2, title: "爱上火车", status: "backed_up", message: "已备份 7 个文件" },
+              { gameId: 3, title: "白色相簿2", status: "backed_up", message: "已备份 4 个文件" },
+            ],
+            startedAt: "2026-09-25 22:40:01",
+            finishedAt: "2026-09-25 22:40:03",
+          };
+        },
         "plugin:event|listen": () => () => {},
         "plugin:event|unlisten": () => null,
         "plugin:window-state|save_window_state": () => null,

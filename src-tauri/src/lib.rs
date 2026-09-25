@@ -10,13 +10,16 @@
 //! - `commands`  Tauri 命令层
 //! - `tray`      系统托盘
 
+mod autobackup;
 mod commands;
 mod db;
 mod engine;
 mod error;
 mod launcher;
+mod library;
 mod models;
 mod paths;
+mod save_backup;
 mod savedata;
 mod scanner;
 mod search;
@@ -73,6 +76,9 @@ pub fn run() {
             if let Err(error) = tray::setup_tray(app.handle()) {
                 log::warn!("托盘初始化失败（不影响主功能）: {error}");
             }
+
+            // ---- 存档自动备份调度（后台线程，仅在设置开启时真正执行）----
+            autobackup::spawn(app.handle().clone());
 
             // 首次启动时自动探测 Locale Emulator，省去用户手动配置
             let db_state = app.state::<Db>();
@@ -163,6 +169,8 @@ pub fn run() {
             commands::saves::read_save_manifest,
             commands::saves::set_game_save_path,
             commands::saves::backup_all_saves,
+            commands::saves::auto_backup_status,
+            commands::saves::run_auto_backup_now,
             // ---- 统计 ----
             commands::stats::stats_overview,
             commands::stats::stats_daily,
@@ -174,6 +182,10 @@ pub fn run() {
             commands::stats::list_game_sessions,
             commands::stats::delete_session,
             commands::stats::add_session,
+            // ---- 导入 / 导出 ----
+            commands::transfer::export_library,
+            commands::transfer::inspect_library_archive,
+            commands::transfer::import_library,
             // ---- 设置 ----
             commands::settings::get_settings,
             commands::settings::set_setting,

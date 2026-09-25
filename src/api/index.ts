@@ -91,6 +91,13 @@ export interface GameFilter {
   sortDesc?: boolean;
 }
 
+/** 扫描时发现的「可能重复」：路径不同但标题与库中某条一致 */
+export interface DuplicateHint {
+  gameId: number;
+  title: string;
+  path: string | null;
+}
+
 export interface ScanCandidate {
   name: string;
   path: string;
@@ -98,6 +105,7 @@ export interface ScanCandidate {
   engine: string | null;
   engineConfidence: number;
   alreadyImported: boolean;
+  possibleDuplicate?: DuplicateHint | null;
 }
 
 export interface ScanOptions {
@@ -170,6 +178,34 @@ export interface RestoreOutcome {
   restoredFiles: number;
   safetyBackup: string | null;
   targetPath: string;
+}
+
+/** 存档自动定时备份的当前状态 */
+export interface AutoBackupStatus {
+  enabled: boolean;
+  intervalMinutes: number;
+  lastRunAt: string | null;
+  /** 已记录内容指纹的游戏数 */
+  trackedGames: number;
+  running: boolean;
+}
+
+export interface AutoBackupItem {
+  gameId: number;
+  title: string;
+  status: string;
+  message: string;
+}
+
+export interface AutoBackupReport {
+  checked: number;
+  backedUp: number;
+  unchanged: number;
+  skipped: number;
+  failed: number;
+  details: AutoBackupItem[];
+  startedAt: string;
+  finishedAt: string;
 }
 
 export interface PlaySession {
@@ -278,6 +314,42 @@ export interface AppInfo {
 
 export type SettingsMap = Record<string, string>;
 
+/** 库归档内容摘要（导入前预览） */
+export interface ArchiveSummary {
+  format: string;
+  version: number;
+  exportedAt: string;
+  appVersion: string;
+  gameCount: number;
+  categoryCount: number;
+  tagCount: number;
+  sessionCount: number;
+  saveSlotCount: number;
+  patchCount: number;
+  noteCount: number;
+  linkCount: number;
+}
+
+export interface ExportOutcome {
+  path: string;
+  bytes: number;
+  summary: ArchiveSummary;
+}
+
+export interface ImportOutcome {
+  mode: string;
+  importedGames: number;
+  skippedGames: number;
+  categories: number;
+  tags: number;
+  sessions: number;
+  saveSlots: number;
+  patches: number;
+  notes: number;
+  links: number;
+  safetyBackup: string | null;
+}
+
 // ==================== 游戏库 ====================
 
 export const libraryApi = {
@@ -363,6 +435,9 @@ export const saveApi = {
   setSavePath: (gameId: number, savePath: string | null) =>
     invoke<void>("set_game_save_path", { gameId, savePath }),
   backupAll: () => invoke<[number, string, boolean][]>("backup_all_saves"),
+  autoBackupStatus: () => invoke<AutoBackupStatus>("auto_backup_status"),
+  /** 立即执行一次自动备份（仍只备份内容有变化的存档） */
+  runAutoBackupNow: () => invoke<AutoBackupReport>("run_auto_backup_now"),
 };
 
 // ==================== 统计 ====================
@@ -393,6 +468,19 @@ export const settingsApi = {
   clearCoverCache: () => invoke<number>("clear_cover_cache"),
   optimizeDb: () => invoke<string>("optimize_database"),
   appInfo: () => invoke<AppInfo>("app_info"),
+};
+
+// ==================== 导入 / 导出 ====================
+
+export const transferApi = {
+  /** 导出整库到指定 JSON 文件 */
+  export: (targetPath: string) => invoke<ExportOutcome>("export_library", { targetPath }),
+  /** 只读取归档摘要，用于导入前确认 */
+  inspect: (sourcePath: string) =>
+    invoke<ArchiveSummary>("inspect_library_archive", { sourcePath }),
+  /** 从归档导入；mode = merge 合并 / replace 覆盖 */
+  import: (sourcePath: string, mode: "merge" | "replace") =>
+    invoke<ImportOutcome>("import_library", { sourcePath, mode }),
 };
 
 // ==================== 辅助工具 ====================

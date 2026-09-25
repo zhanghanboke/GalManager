@@ -22,12 +22,15 @@ const props = defineProps<{
   selectedIds: number[];
   sortBy: string;
   sortDesc: boolean;
+  /** 键盘导航：当前聚焦的行下标（roving tabindex） */
+  focusedIndex?: number;
 }>();
 
 const emit = defineEmits<{
   (e: "open", game: Game): void;
   (e: "launch", game: Game): void;
   (e: "select", id: number): void;
+  (e: "focused", index: number): void;
   (e: "contextmenu", payload: { game: Game; x: number; y: number }): void;
   (e: "sort", value: string): void;
 }>();
@@ -137,11 +140,14 @@ function onRowClick(game: Game) {
 
       <tbody>
         <tr
-          v-for="game in games"
+          v-for="(game, index) in games"
           :key="game.id"
-          class="group cursor-pointer border-t border-line-soft/70 transition hover:bg-surface-2/60"
+          data-game-row
+          :tabindex="focusedIndex === index ? 0 : -1"
+          class="group cursor-pointer border-t border-line-soft/70 outline-none transition hover:bg-surface-2/60 focus-visible:bg-surface-2/70 focus-visible:ring-1 focus-visible:ring-accent/70 focus-visible:ring-inset"
           :class="selectedIds.includes(game.id) ? 'bg-accent/[0.07]' : ''"
           @click="onRowClick(game)"
+          @focus="emit('focused', index)"
           @dblclick="emit('open', game)"
           @contextmenu.prevent="
             emit('contextmenu', { game, x: ($event as MouseEvent).clientX, y: ($event as MouseEvent).clientY })

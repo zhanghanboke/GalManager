@@ -10,12 +10,18 @@ const props = defineProps<{
   selectionMode?: boolean;
   selected?: boolean;
   index?: number;
+  /**
+   * 键盘导航（roving tabindex）：整个网格里只有当前项 tabindex=0，
+   * 其余为 -1，这样 Tab 只需进出一趟，方向键负责在卡片间移动。
+   */
+  focused?: boolean;
 }>();
 
 const emit = defineEmits<{
   open: [game: Game];
   launch: [game: Game];
   select: [game: Game];
+  focused: [index: number];
   contextmenu: [payload: { game: Game; x: number; y: number }];
 }>();
 
@@ -61,9 +67,13 @@ function onContextMenu(event: MouseEvent) {
 
 <template>
   <article
-    class="group cover-enter relative cursor-pointer select-none"
+    data-game-card
+    :tabindex="focused ? 0 : -1"
+    :aria-label="game.title"
+    class="group cover-enter relative cursor-pointer select-none rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-accent/70"
     :style="{ animationDelay: `${Math.min((index ?? 0) * 14, 260)}ms` }"
     @click="selectionMode ? emit('select', game) : emit('open', game)"
+    @focus="emit('focused', index ?? 0)"
     @contextmenu="onContextMenu"
   >
     <!-- 封面 -->

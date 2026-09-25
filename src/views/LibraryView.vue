@@ -154,13 +154,151 @@ function closeMenu() {
   menu.value = null;
 }
 
+/* ---------------- 键盘导航 ---------------- */
+
+/** 当前聚焦的卡片 / 行下标（roving tabindex） */
+const focusIndex = ref(0);
+/** 列表滚动容器，方向键事件由它统一接收（卡片与表格行都会冒泡上来） */
+const listRef = ref<HTMLElement | null>(null);
+const searchField = ref<HTMLInputElement | null>(null);
+
+function currentItems(): HTMLElement[] {
+  const container = listRef.value;
+  if (!container) return [];
+  const selector = settings.viewMode === "list" ? "[data-game-row]" : "[data-game-card]";
+  return Array.from(container.querySelectorAll<HTMLElement>(selector));
+}
+
+/** 封面墙当前列数，用于上下键按「行」跳 */
+function columnCount(): number {
+  const grid = listRef.value?.querySelector<HTMLElement>("[data-grid]");
+  if (!grid) return 1;
+  const columns = getComputedStyle(grid).gridTemplateColumns;
+  const count = columns.split(/\s+/).filter((part) => part && part !== "none").length;
+  return Math.max(1, count);
+}
+
+function focusItemAt(index: number) {
+  const items = currentItems();
+  if (!items.length) return;
+  const clamped = Math.max(0, Math.min(index, items.length - 1));
+  focusIndex.value = clamped;
+  items[clamped]?.focus();
+}
+
+function isDialogOpen() {
+  return scanOpen.value || editing.value !== null || menu.value !== null;
+}
+
+/** 方向键移动焦点；Enter / 空格激活当前项 */
+function onKeydown(event: KeyboardEvent) {
+  const items = currentItems();
+  if (!items.length) return;
+
+  if (event.key === "Enter" || event.key === " ") {
+    const game = library.games[focusIndex.value];
+    if (!game) return;
+    event.preventDefault();
+    if (event.key === "Enter") {
+      // 多选模式下 Enter 用于勾选，避免误跳走
+      if (library.selectionMode) library.toggleSelected(game.id);
+      else openDetail(game);
+    } else {
+      // 空格切换选中；不在多选模式时先进入多选，让用户看到勾选结果
+      if (!library.selectionMode) library.toggleSelectionMode();
+      library.toggleSelected(game.id);
+    }
+    return;
+  }
+
+  // 列表视图只有一列，左右键不参与导航
+  const singleColumn = settings.viewMode === "list";
+  const step = singleColumn ? 1 : columnCount();
+  const current = focusIndex.value;
+  let next: number | null = null;
+
+  switch (event.key) {
+    case "ArrowRight":
+      if (singleColumn) return;
+      next = current + 1;
+      break;
+    case "ArrowLeft":
+      if (singleColumn) return;
+      next = current - 1;
+      break;
+    case "ArrowDown":
+      next = current + step;
+      break;
+    case "ArrowUp":
+      next = current - step;
+      break;
+    case "Home":
+      next = 0;
+      break;
+    case "End":
+      next = items.length - 1;
+      break;
+    default:
+      return;
+  }
+
+  event.preventDefault();
+  focusItemAt(next);
+}
+
+/** 全局快捷键：Ctrl/Cmd+F 或 / 聚焦搜索，Esc 收尾 */
+function onGlobalKeydown(event: KeyboardEvent) {
+  const target = event.target as HTMLElement | null;
+  const typing =
+    !!target &&
+    (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "f") {
+    event.preventDefault();
+    searchField.value?.focus();
+    searchField.value?.select();
+    return;
+  }
+
+  if (event.key === "/" && !typing && !isDialogOpen()) {
+    event.preventDefault();
+    searchField.value?.focus();
+    return;
+  }
+
+  if (event.key === "Escape") {
+    // 对话框自己处理 Esc（BaseModal 已监听），这里不要抢
+    if (isDialogOpen()) return;
+    if (typing) {
+      target?.blur();
+      return;
+    }
+    if (library.selectionMode) {
+      library.toggleSelectionMode();
+      return;
+    }
+    // 退出卡片焦点，让 Tab 从工具栏重新开始
+    if (target?.closest("[data-game-card],[data-game-row]")) target.blur();
+  }
+}
+
+// 筛选 / 搜索导致列表变短后，把焦点下标夹回合法范围
+watch(
+  () => library.games.length,
+  (length) => {
+    if (length && focusIndex.value >= length) focusIndex.value = 0;
+  },
+);
+
 onMounted(() => {
   window.addEventListener("click", closeMenu);
   window.addEventListener("scroll", closeMenu, true);
+  window.addEventListener("keydown", onGlobalKeydown);
 });
 onUnmounted(() => {
   window.removeEventListener("click", closeMenu);
   window.removeEventListener("scroll", closeMenu, true);
+  window.removeEventListener("keydown", onGlobalKeydown);
 });
 </script>
 
@@ -181,11 +319,12 @@ onUnmounted(() => {
             <path d="M9.5 9.5L12.6 12.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
           </svg>
           <input
+            ref="searchField"
             v-model="searchInput"
             class="field pl-8"
             type="search"
             aria-label="搜索游戏"
-            placeholder="搜索游戏名、拼音首字母或开发商…"
+            placeholder="搜索游戏名、拼音首字母或开发商…（Ctrl+F）"
             @input="applySearch"
           />
         </div>
@@ -335,8 +474,8 @@ onUnmounted(() => {
       </div>
     </header>
 
-    <!-- 封面墙 -->
-    <div class="min-h-0 flex-1 scroll-y px-5 py-4">
+    <!-- 封面墙 / 列表 -->
+    <div ref="listRef" class="min-h-0 flex-1 scroll-y px-5 py-4" @keydown="onKeydown">
       <EmptyState
         v-if="!library.games.length && !library.loading"
         :has-filter="library.hasActiveFilter"
@@ -349,18 +488,25 @@ onUnmounted(() => {
         "
       />
 
-      <div v-else-if="settings.viewMode === 'grid'" class="grid gap-x-3.5 gap-y-5" :style="gridStyle">
+      <div
+        v-else-if="settings.viewMode === 'grid'"
+        data-grid
+        class="grid gap-x-3.5 gap-y-5"
+        :style="gridStyle"
+      >
         <GameCard
           v-for="(game, index) in library.games"
           :key="game.id"
           :game="game"
           :index="index"
+          :focused="index === focusIndex"
           :running="settings.runningIds.has(game.id)"
           :selection-mode="library.selectionMode"
           :selected="library.selectedIds.includes(game.id)"
           @open="openDetail"
           @launch="handleLaunch"
           @select="library.toggleSelected(game.id)"
+          @focused="focusIndex = $event"
           @contextmenu="menu = $event"
         />
       </div>
@@ -373,9 +519,11 @@ onUnmounted(() => {
         :selected-ids="library.selectedIds"
         :sort-by="library.filter.sortBy ?? 'title'"
         :sort-desc="library.filter.sortDesc ?? false"
+        :focused-index="focusIndex"
         @open="openDetail"
         @launch="handleLaunch"
         @select="onTableSelect"
+        @focused="focusIndex = $event"
         @contextmenu="menu = $event"
         @sort="onTableSort"
       />

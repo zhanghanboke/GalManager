@@ -24,8 +24,13 @@ pub fn defaults() -> HashMap<String, String> {
     map.insert("sort_desc".into(), "false".into());
     map.insert("minimize_to_tray".into(), "true".into());
     map.insert("close_to_tray".into(), "true".into());
-    map.insert("auto_scan_on_start".into(), "false".into());
+    // 存档自动定时备份
     map.insert("auto_backup_saves".into(), "false".into());
+    map.insert(
+        "auto_backup_interval_minutes".into(),
+        crate::autobackup::DEFAULT_INTERVAL_MINUTES.to_string(),
+    );
+    map.insert("auto_backup_last_run".into(), String::new());
     map.insert("show_uncategorized".into(), "true".into());
     map
 }

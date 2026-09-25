@@ -922,6 +922,118 @@ impl Db {
         })
     }
 
+    // ==================== 全量读取（导入 / 导出用） ====================
+    //
+    // 归档需要跨游戏拉取全部子表，逐游戏查询会产生 N+1 次 SQL；
+    // 这里统一提供不带 game_id 过滤的批量读取。
+
+    pub fn all_sessions(&self) -> AppResult<Vec<PlaySession>> {
+        self.with_conn(|conn| {
+            let mut stmt = conn.prepare(
+                "SELECT id, game_id, started_at, ended_at, duration_seconds, note
+                 FROM play_sessions ORDER BY id ASC",
+            )?;
+            let rows = stmt.query_map([], map_session)?;
+            Ok(rows.collect::<Result<Vec<_>, _>>()?)
+        })
+    }
+
+    pub fn all_save_slots(&self) -> AppResult<Vec<SaveSlot>> {
+        self.with_conn(|conn| {
+            let mut stmt = conn.prepare(
+                "SELECT id, game_id, slot_name, engine, source_path, backup_path,
+                        size_bytes, file_count, remark, created_at
+                 FROM save_slots ORDER BY id ASC",
+            )?;
+            let rows = stmt.query_map([], map_save_slot)?;
+            Ok(rows.collect::<Result<Vec<_>, _>>()?)
+        })
+    }
+
+    pub fn all_patches(&self) -> AppResult<Vec<Patch>> {
+        self.with_conn(|conn| {
+            let mut stmt = conn.prepare(
+                "SELECT id, game_id, name, version, patch_type, file_path, url, installed, remark, created_at
+                 FROM patches ORDER BY id ASC",
+            )?;
+            let rows = stmt.query_map([], |row| {
+                Ok(Patch {
+                    id: row.get(0)?,
+                    game_id: row.get(1)?,
+                    name: row.get(2)?,
+                    version: row.get(3)?,
+                    patch_type: row.get(4)?,
+                    file_path: row.get(5)?,
+                    url: row.get(6)?,
+                    installed: row.get(7)?,
+                    remark: row.get(8)?,
+                    created_at: row.get(9)?,
+                })
+            })?;
+            Ok(rows.collect::<Result<Vec<_>, _>>()?)
+        })
+    }
+
+    pub fn all_notes(&self) -> AppResult<Vec<Note>> {
+        self.with_conn(|conn| {
+            let mut stmt = conn.prepare(
+                "SELECT id, game_id, title, content, updated_at, created_at
+                 FROM notes ORDER BY id ASC",
+            )?;
+            let rows = stmt.query_map([], |row| {
+                Ok(Note {
+                    id: row.get(0)?,
+                    game_id: row.get(1)?,
+                    title: row.get(2)?,
+                    content: row.get(3)?,
+                    updated_at: row.get(4)?,
+                    created_at: row.get(5)?,
+                })
+            })?;
+            Ok(rows.collect::<Result<Vec<_>, _>>()?)
+        })
+    }
+
+    // ==================== 自动备份进度 ====================
+
+    /// 读取某游戏上次自动备份时的存档指纹
+    pub fn auto_backup_fingerprint(&self, game_id: i64) -> AppResult<Option<String>> {
+        self.with_conn(|conn| {
+            let value = conn
+                .query_row(
+                    "SELECT fingerprint FROM auto_backup_state WHERE game_id = ?1",
+                    params![game_id],
+                    |row| row.get::<_, String>(0),
+                )
+                .optional()?;
+            Ok(value)
+        })
+    }
+
+    /// 记录某游戏本次自动备份的存档指纹
+    pub fn set_auto_backup_fingerprint(&self, game_id: i64, fingerprint: &str) -> AppResult<()> {
+        self.with_conn(|conn| {
+            conn.execute(
+                "INSERT INTO auto_backup_state(game_id, fingerprint, last_run_at)
+                 VALUES (?1, ?2, datetime('now','localtime'))
+                 ON CONFLICT(game_id) DO UPDATE SET
+                     fingerprint = excluded.fingerprint,
+                     last_run_at = excluded.last_run_at",
+                params![game_id, fingerprint],
+            )?;
+            Ok(())
+        })
+    }
+
+    /// 已记录自动备份进度的游戏数量
+    pub fn auto_backup_tracked_count(&self) -> AppResult<i64> {
+        self.with_conn(|conn| {
+            let count: i64 =
+                conn.query_row("SELECT COUNT(*) FROM auto_backup_state", [], |row| row.get(0))?;
+            Ok(count)
+        })
+    }
+
     // ==================== 统计 ====================
 
     pub fn overview(&self) -> AppResult<StatsOverview> {
@@ -1312,7 +1424,7 @@ fn map_save_slot(row: &Row) -> rusqlite::Result<SaveSlot> {
 
 // ==================== Schema ====================
 
-const SCHEMA_VERSION: i32 = 1;
+const SCHEMA_VERSION: i32 = 2;
 
 const SCHEMA: &str = r#"
 CREATE TABLE IF NOT EXISTS meta (
@@ -1440,6 +1552,14 @@ CREATE TABLE IF NOT EXISTS resource_links (
     kind       TEXT NOT NULL DEFAULT 'other',
     remark     TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+-- 定时自动备份的进度：记录每个游戏上次备份时的存档目录指纹，
+-- 内容没变就跳过，避免反复写入完全相同的归档。
+CREATE TABLE IF NOT EXISTS auto_backup_state (
+    game_id     INTEGER PRIMARY KEY REFERENCES games(id) ON DELETE CASCADE,
+    fingerprint TEXT NOT NULL,
+    last_run_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
 );
 "#;
 
