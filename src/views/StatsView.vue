@@ -132,14 +132,14 @@ onMounted(load);
         </div>
         <div class="panel p-4">
           <p class="text-[11.5px] text-ink-3">近 30 天</p>
-          <p class="mt-1.5 text-[24px] leading-none font-semibold text-cyan">
+          <p class="mt-1.5 text-[24px] leading-none font-semibold text-sage">
             {{ formatHours(overview?.monthPlaySeconds ?? 0) }}
           </p>
           <p class="mt-2 text-[11px] text-ink-3">在玩 {{ overview?.playingGames ?? 0 }} 款</p>
         </div>
         <div class="panel p-4">
           <p class="text-[11.5px] text-ink-3">存档备份</p>
-          <p class="mt-1.5 text-[24px] leading-none font-semibold text-lime">
+          <p class="mt-1.5 text-[24px] leading-none font-semibold text-clay">
             {{ overview?.saveSlotCount ?? 0 }}
           </p>
           <p class="mt-2 text-[11px] text-ink-3">个槽位</p>
@@ -175,7 +175,7 @@ onMounted(load);
                     height: `${Math.max((seconds / maxMonthly) * 100, seconds > 0 ? 3 : 1)}%`,
                     background:
                       seconds > 0
-                        ? 'linear-gradient(180deg, #8b7cf6, #6b5bd6)'
+                        ? 'linear-gradient(180deg, #eea95e, #c9762c)'
                         : 'var(--color-surface-3)',
                   }"
                 />
@@ -225,13 +225,13 @@ onMounted(load);
             <div class="flex gap-2.5">
               <div class="flex-1 rounded-xl bg-surface-2 px-3 py-2.5">
                 <p class="text-[11px] text-ink-3">新通关</p>
-                <p class="mt-0.5 text-[15px] font-semibold text-lime">
+                <p class="mt-0.5 text-[15px] font-semibold text-sage">
                   {{ report.completedCount }}
                 </p>
               </div>
               <div class="flex-1 rounded-xl bg-surface-2 px-3 py-2.5">
                 <p class="text-[11px] text-ink-3">新入库</p>
-                <p class="mt-0.5 text-[15px] font-semibold text-rose">
+                <p class="mt-0.5 text-[15px] font-semibold text-clay">
                   {{ report.addedCount }}
                 </p>
               </div>
@@ -253,7 +253,7 @@ onMounted(load);
                 class="w-full rounded-t-[3px]"
                 :style="{
                   height: `${Math.max((seconds / maxWeekday) * 100, seconds > 0 ? 4 : 1)}%`,
-                  background: index >= 5 ? '#f472b6' : '#8b7cf6',
+                  background: index >= 5 ? '#c96a52' : '#e0913c',
                   opacity: seconds > 0 ? 0.85 : 0.2,
                 }"
               />
@@ -274,15 +274,15 @@ onMounted(load);
           <svg v-if="daily.length >= 2" viewBox="0 0 620 96" class="h-[110px] w-full" preserveAspectRatio="none">
             <defs>
               <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#8b7cf6" stop-opacity="0.34" />
-                <stop offset="100%" stop-color="#8b7cf6" stop-opacity="0" />
+                <stop offset="0%" stop-color="#e0913c" stop-opacity="0.34" />
+                <stop offset="100%" stop-color="#e0913c" stop-opacity="0" />
               </linearGradient>
             </defs>
             <polygon :points="dailyArea" fill="url(#areaFill)" />
             <polyline
               :points="dailyPolyline"
               fill="none"
-              stroke="#8b7cf6"
+              stroke="#e0913c"
               stroke-width="2"
               stroke-linejoin="round"
               stroke-linecap="round"
@@ -345,7 +345,7 @@ onMounted(load);
               <p class="truncate text-[12.5px] text-ink">{{ item.title }}</p>
               <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-3">
                 <div
-                  class="h-full rounded-full bg-gradient-to-r from-accent to-rose"
+                  class="h-full rounded-full bg-gradient-to-r from-accent to-clay"
                   :style="{ width: `${(item.seconds / maxRanking) * 100}%` }"
                 />
               </div>

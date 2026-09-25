@@ -287,7 +287,7 @@ async function submit() {
 
         <div class="rounded-xl border border-line bg-surface-2 p-3">
           <label class="flex cursor-pointer items-center gap-2 text-[12.5px] text-ink">
-            <input v-model="form.leLaunch" type="checkbox" class="accent-[#8b7cf6]" />
+            <input v-model="form.leLaunch" type="checkbox" />
             使用 Locale Emulator 转区启动
           </label>
           <div v-if="form.leLaunch" class="mt-2.5">

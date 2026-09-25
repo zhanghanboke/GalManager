@@ -31,17 +31,17 @@ watch(
   { immediate: true },
 );
 
-const statusColor = computed(() => STATUS_COLORS[props.game.playStatus] ?? "#6d7689");
+const statusColor = computed(() => STATUS_COLORS[props.game.playStatus] ?? "#8a7d6d");
 const statusLabel = computed(() => STATUS_LABELS[props.game.playStatus] ?? props.game.playStatus);
 
-/** 无封面时的占位渐变色：由标题哈希决定，保证同一游戏颜色稳定 */
+/** 无封面时的占位渐变色：由标题哈希决定，保证同一游戏颜色稳定（暖色系） */
 const placeholder = computed(() => {
   const palettes = [
-    ["#2a2440", "#3d2f52"],
-    ["#1f2b3d", "#2c3f57"],
-    ["#3a2434", "#52303f"],
-    ["#1f3330", "#2c4a45"],
-    ["#332b1f", "#4a3f2c"],
+    ["#3a2a1e", "#52381f"],
+    ["#402a20", "#5c3a24"],
+    ["#33261c", "#4a3524"],
+    ["#452c1c", "#63401f"],
+    ["#2e2118", "#443020"],
   ];
   let hash = 0;
   for (let i = 0; i < props.game.title.length; i += 1) {
@@ -96,7 +96,7 @@ function onContextMenu(event: MouseEvent) {
           class="flex h-5 w-5 items-center justify-center rounded-md bg-black/55 backdrop-blur-sm"
           title="已收藏"
         >
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="#f0b429">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="#e8b04b">
             <path d="M6 .8l1.6 3.3 3.6.5-2.6 2.5.6 3.6L6 9l-3.2 1.7.6-3.6L.8 4.6l3.6-.5z" />
           </svg>
         </span>
@@ -105,8 +105,8 @@ function onContextMenu(event: MouseEvent) {
           class="flex h-5 items-center gap-1 rounded-md bg-black/60 px-1.5 backdrop-blur-sm"
           title="正在游玩"
         >
-          <span class="h-1.5 w-1.5 rounded-full bg-cyan" />
-          <span class="text-[9.5px] font-medium text-cyan">运行中</span>
+          <span class="h-1.5 w-1.5 rounded-full bg-sage" />
+          <span class="text-[9.5px] font-medium text-sage">运行中</span>
         </span>
       </div>
 

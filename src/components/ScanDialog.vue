@@ -171,11 +171,11 @@ const engineBadge = (candidate: ScanCandidate) =>
             type="range"
             min="1"
             max="6"
-            class="w-full accent-[#8b7cf6]"
+            class="w-full "
             :disabled="mode === 'first_level'"
           />
           <label class="mt-2 flex cursor-pointer items-center gap-2 text-[12.5px] text-ink-2">
-            <input v-model="detectEngine" type="checkbox" class="accent-[#8b7cf6]" />
+            <input v-model="detectEngine" type="checkbox" />
             识别引擎类型（Kirikiri / Ren'Py / Unity / RPG Maker …）
           </label>
         </div>
@@ -198,7 +198,7 @@ const engineBadge = (candidate: ScanCandidate) =>
         <label class="flex cursor-pointer items-center gap-2 text-[12px] text-ink-2">
           <input
             type="checkbox"
-            class="accent-[#8b7cf6]"
+           
             :checked="checked.size > 0 && checked.size === candidates.filter((c) => !c.alreadyImported).length"
             @change="toggleAll(($event.target as HTMLInputElement).checked)"
           />
@@ -216,7 +216,7 @@ const engineBadge = (candidate: ScanCandidate) =>
           >
             <input
               type="checkbox"
-              class="shrink-0 accent-[#8b7cf6]"
+              class="shrink-0 "
               :checked="checked.has(candidate.path)"
               :disabled="candidate.alreadyImported"
               @change="toggle(candidate.path)"
@@ -247,7 +247,7 @@ const engineBadge = (candidate: ScanCandidate) =>
               <span
                 class="chip"
                 :class="candidate.engine ? 'text-accent' : 'text-ink-3'"
-                :style="candidate.engine ? { background: '#8b7cf61f' } : {}"
+                :style="candidate.engine ? { background: '#e0913c1f' } : {}"
               >
                 {{ engineBadge(candidate) }}
               </span>
@@ -266,7 +266,7 @@ const engineBadge = (candidate: ScanCandidate) =>
           </option>
         </select>
         <label class="flex cursor-pointer items-center gap-1.5 text-[12px] text-ink-2">
-          <input v-model="useLocaleEmulator" type="checkbox" class="accent-[#8b7cf6]" />
+          <input v-model="useLocaleEmulator" type="checkbox" />
           默认转区启动
         </label>
       </div>

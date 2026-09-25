@@ -1,7 +1,8 @@
 """生成 GalManager 应用图标（程序化绘制，无需外部素材）。
 
 输出 1024x1024 PNG，供 `tauri icon` 生成各平台图标集。
-设计语言与前端一致：紫罗兰 → 玫瑰粉 渐变 + 圆角方形 + 白色 G 字标。
+设计语言与前端一致：琥珀金 → 赤陶 渐变 + 圆角方形 + 深褐 G 字标
+（深色字标压在琥珀底上，与主按钮的「暖金 + 深褐字」保持同一套观感）。
 """
 
 from __future__ import annotations
@@ -13,10 +14,11 @@ SIZE = 1024
 RADIUS = int(SIZE * 0.225)
 OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
-# 与前端 --color-accent / --color-rose 保持一致
-COLOR_FROM = (139, 124, 246)
-COLOR_TO = (244, 114, 182)
-COLOR_GLOW = (167, 155, 250)
+# 与前端 --color-accent / --color-clay 保持一致
+COLOR_FROM = (224, 145, 60)   # #e0913c 琥珀金
+COLOR_TO = (201, 106, 82)     # #c96a52 赤陶
+COLOR_GLOW = (238, 169, 94)   # #eea95e 暖金外发光
+GLYPH_FILL = (42, 24, 6)      # #2a1806 深褐，与 .btn-primary 文字同色
 
 FONT_CANDIDATES = [
     r"C:\Windows\Fonts\arialbd.ttf",
@@ -58,7 +60,7 @@ def load_font(size: int) -> ImageFont.FreeTypeFont:
 
 
 def draw_glyph(size: int) -> Image.Image:
-    """白色字母 G + 柔光"""
+    """深褐色字母 G + 柔光"""
     layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(layer)
 
@@ -69,14 +71,14 @@ def draw_glyph(size: int) -> Image.Image:
     text_h = box[3] - box[1]
     position = ((size - text_w) / 2 - box[0], (size - text_h) / 2 - box[1] - size * 0.015)
 
-    # 先画一层柔光，让字标有悬浮感
+    # 先画一层暖白柔光，让字标有悬浮感
     glow = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    ImageDraw.Draw(glow).text(position, text, font=font, fill=(255, 255, 255, 130))
+    ImageDraw.Draw(glow).text(position, text, font=font, fill=(255, 241, 214, 120))
     glow = glow.filter(ImageFilter.GaussianBlur(size * 0.022))
     layer = Image.alpha_composite(layer, glow)
 
     draw = ImageDraw.Draw(layer)
-    draw.text(position, text, font=font, fill=(255, 255, 255, 255))
+    draw.text(position, text, font=font, fill=GLYPH_FILL + (255,))
     return layer
 
 

@@ -2,32 +2,37 @@
 
 /* ============================================================
    GalManager 设计系统
-   极简深色 · 封面墙为主视觉
+   暖色调 · 深色 · 封面墙为主视觉
+   整体走「夜里台灯下的木质书桌」：暖褐灰打底，琥珀金作主色，
+   赤陶与橄榄作副色，全盘避开冷色与常见的 AI 紫。
    ============================================================ */
 
 @theme {
-  /* 背景层次：从最深到最浅，用于构建空间纵深感 */
-  --color-base: #0a0b0f;
-  --color-surface: #111319;
-  --color-surface-2: #171a22;
-  --color-surface-3: #1e222c;
-  --color-line: #272c38;
-  --color-line-soft: #1c202a;
+  /* 背景层次：暖褐灰，从最深到最浅，用于构建空间纵深感 */
+  --color-base: #100d0a;
+  --color-surface: #191410;
+  --color-surface-2: #221b15;
+  --color-surface-3: #2e251d;
+  --color-line: #3a2f25;
+  --color-line-soft: #251e17;
 
-  /* 文本层次 */
-  --color-ink: #e9ecf3;
-  --color-ink-2: #a8b0c2;
-  --color-ink-3: #6d7689;
+  /* 文本层次：暖白 / 米色，不用冷灰 */
+  --color-ink: #f5eee4;
+  --color-ink-2: #bdb1a2;
+  --color-ink-3: #867a6b;
 
-  /* 主色：柔和紫罗兰，配合副色玫瑰粉 */
-  --color-accent: #8b7cf6;
-  --color-accent-hi: #a79bfa;
-  --color-accent-dim: #4c4390;
-  --color-rose: #f472b6;
-  --color-cyan: #4dd4d4;
-  --color-amber: #f0b429;
-  --color-lime: #7dd67d;
-  --color-danger: #f2555a;
+  /* 主色：琥珀金（配深色文字使用） */
+  --color-accent: #e0913c;
+  --color-accent-hi: #eea95e;
+  --color-accent-dim: #85521f;
+
+  /* 副色：赤陶 / 铜，用于渐变与点缀 */
+  --color-clay: #c96a52;
+  /* 活跃态：暖橄榄绿，用于「运行中 / 已安装 / 高置信度」 */
+  --color-sage: #a9bd6b;
+  /* 强调金，用于收藏星标与警告 */
+  --color-amber: #e8b04b;
+  --color-danger: #dd5f4a;
 
   --radius-card: 14px;
   --font-sans: "Inter", "HarmonyOS Sans SC", "Microsoft YaHei UI", "PingFang SC",
@@ -59,11 +64,11 @@ body {
   user-select: none;
 }
 
-/* 应用外壳：左上紫罗兰、右上玫瑰粉的两团极淡辉光，制造空间纵深 */
+/* 应用外壳：左上琥珀、右上赤陶的两团极淡辉光，制造空间纵深 */
 .app-shell {
   background-image:
-    radial-gradient(880px 460px at 10% -12%, rgba(139, 124, 246, 0.11), transparent 64%),
-    radial-gradient(720px 420px at 96% -4%, rgba(244, 114, 182, 0.07), transparent 62%);
+    radial-gradient(880px 460px at 10% -12%, rgba(224, 145, 60, 0.13), transparent 64%),
+    radial-gradient(720px 420px at 96% -4%, rgba(201, 106, 82, 0.09), transparent 62%);
   background-repeat: no-repeat;
 }
 
@@ -74,7 +79,15 @@ textarea,
 }
 
 ::selection {
-  background: rgba(139, 124, 246, 0.32);
+  background: rgba(224, 145, 60, 0.32);
+}
+
+/* 复选框 / 单选框 / 滑块统一用主色，省去在每个组件上写 accent-[...] */
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"],
+progress {
+  accent-color: var(--color-accent);
 }
 
 /* 键盘可达性：只在键盘导航时显示焦点环，鼠标点击不显示 */
@@ -96,13 +109,13 @@ textarea,
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2c313d;
+  background: #3a2f25;
   border-radius: 99px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3d4453;
+  background: #4d4033;
   background-clip: padding-box;
 }
 
@@ -131,9 +144,11 @@ textarea,
   border: 1px solid transparent;
 }
 @utility btn-primary {
+  /* 琥珀底 + 深褐字：暖金质感，且对比度远好于白字压琥珀 */
   background: linear-gradient(180deg, var(--color-accent-hi), var(--color-accent));
-  color: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  color: #2a1806;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 @utility btn-ghost {
   background: var(--color-surface-2);
@@ -143,7 +158,7 @@ textarea,
 @utility btn-danger {
   background: transparent;
   color: var(--color-danger);
-  border-color: #4a2427;
+  border-color: #4a2a24;
 }
 
 .btn:hover {
@@ -153,15 +168,15 @@ textarea,
   transform: translateY(0);
 }
 .btn-primary:hover {
-  box-shadow: 0 4px 14px -2px rgba(139, 124, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px -2px rgba(224, 145, 60, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.26);
 }
 .btn-ghost:hover {
   background: var(--color-surface-3);
   color: var(--color-ink);
-  border-color: #333a49;
+  border-color: #4a3d30;
 }
 .btn-danger:hover {
-  background: #2a1618;
+  background: #2c1a15;
 }
 .btn:disabled {
   opacity: 0.4;

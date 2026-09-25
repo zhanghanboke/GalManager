@@ -195,7 +195,7 @@ onUnmounted(() => {
           :class="library.filter.favoriteOnly ? 'bg-amber/20 text-amber' : 'hover:bg-surface-3'"
           @click="library.setFilter({ favoriteOnly: !library.filter.favoriteOnly })"
         >
-          <svg width="10" height="10" viewBox="0 0 12 12" :fill="library.filter.favoriteOnly ? '#f0b429' : 'currentColor'">
+          <svg width="10" height="10" viewBox="0 0 12 12" :fill="library.filter.favoriteOnly ? '#e8b04b' : 'currentColor'">
             <path d="M6 .8l1.6 3.3 3.6.5-2.6 2.5.6 3.6L6 9l-3.2 1.7.6-3.6L.8 4.6l3.6-.5z" />
           </svg>
           收藏

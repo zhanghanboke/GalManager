@@ -196,7 +196,7 @@ onMounted(async () => {
           <label class="flex cursor-pointer items-start gap-3">
             <input
               type="checkbox"
-              class="mt-0.5 accent-[#8b7cf6]"
+              class="mt-0.5"
               :checked="settings.values.close_to_tray !== 'false'"
               @change="update('close_to_tray', ($event.target as HTMLInputElement).checked ? 'true' : 'false')"
             />
@@ -303,7 +303,7 @@ onMounted(async () => {
                 :key="gameId"
                 class="flex items-center gap-2 text-[11.5px]"
               >
-                <span class="h-1.5 w-1.5 shrink-0 rounded-full" :style="{ background: ok ? '#7dd67d' : '#f0b429' }" />
+                <span class="h-1.5 w-1.5 shrink-0 rounded-full" :style="{ background: ok ? '#a9bd6b' : '#e8b04b' }" />
                 <span class="text-ink-3">#{{ gameId }}</span>
                 <span class="text-ink-2">{{ message }}</span>
               </p>
@@ -417,7 +417,7 @@ onMounted(async () => {
             打开数据目录
           </button>
           <button class="btn btn-ghost" :disabled="busy" @click="optimizeDb">整理数据库</button>
-          <button class="btn btn-ghost border-[#4a2427] text-danger" @click="clearCovers">
+          <button class="btn btn-ghost border-[#4a2a24] text-danger" @click="clearCovers">
             清理封面缓存
           </button>
         </div>

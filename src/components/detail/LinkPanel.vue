@@ -9,12 +9,12 @@ import { formatDateTime } from "../../utils/format";
 const props = defineProps<{ gameId: number }>();
 
 const KINDS = [
-  { value: "wiki", label: "攻略 Wiki", color: "#8b7cf6" },
-  { value: "patch", label: "补丁下载", color: "#f472b6" },
-  { value: "video", label: "视频", color: "#f2555a" },
-  { value: "forum", label: "论坛讨论", color: "#4dd4d4" },
-  { value: "store", label: "商店页面", color: "#f0b429" },
-  { value: "other", label: "其它", color: "#6d7689" },
+  { value: "wiki", label: "攻略 Wiki", color: "#e0913c" },
+  { value: "patch", label: "补丁下载", color: "#c96a52" },
+  { value: "video", label: "视频", color: "#dd5f4a" },
+  { value: "forum", label: "论坛讨论", color: "#a9bd6b" },
+  { value: "store", label: "商店页面", color: "#e8b04b" },
+  { value: "other", label: "其它", color: "#8a7d6d" },
 ];
 
 const links = ref<ResourceLink[]>([]);
@@ -84,7 +84,7 @@ async function open(link: ResourceLink) {
 }
 
 const kindMeta = (value: string) =>
-  KINDS.find((k) => k.value === value) ?? { label: value, color: "#6d7689" };
+  KINDS.find((k) => k.value === value) ?? { label: value, color: "#8a7d6d" };
 
 onMounted(load);
 </script>
@@ -134,7 +134,7 @@ onMounted(load);
         <div class="flex shrink-0 items-center gap-1.5">
           <button class="btn btn-ghost h-7 px-2.5 text-[12px]" @click="open(link)">打开</button>
           <button
-            class="btn btn-ghost h-7 px-2.5 text-[12px] border-[#4a2427] text-danger"
+            class="btn btn-ghost h-7 px-2.5 text-[12px] border-[#4a2a24] text-danger"
             @click="remove(link)"
           >
             删除

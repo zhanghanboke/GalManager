@@ -157,12 +157,12 @@ onMounted(load);
       >
         <button
           class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition"
-          :class="patch.installed === 1 ? 'border-lime bg-lime/20' : 'border-line'"
+          :class="patch.installed === 1 ? 'border-sage bg-sage/20' : 'border-line'"
           :title="patch.installed === 1 ? '已安装（点击取消）' : '未安装（点击标记）'"
           @click="toggleInstalled(patch)"
         >
           <svg v-if="patch.installed === 1" width="11" height="11" viewBox="0 0 12 12" fill="none">
-            <path d="M2.5 6.2l2.4 2.4L9.5 3.6" stroke="#7dd67d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M2.5 6.2l2.4 2.4L9.5 3.6" stroke="#a9bd6b" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </button>
 
@@ -172,7 +172,7 @@ onMounted(load);
             <span v-if="patch.version" class="text-[11px] font-normal text-ink-3">
               v{{ patch.version }}
             </span>
-            <span class="chip" :class="patch.installed === 1 ? 'text-lime' : 'text-ink-3'">
+            <span class="chip" :class="patch.installed === 1 ? 'text-sage' : 'text-ink-3'">
               {{ patch.installed === 1 ? "已安装" : "未安装" }}
             </span>
           </p>
@@ -203,7 +203,7 @@ onMounted(load);
           </a>
           <button class="btn btn-ghost h-7 px-2.5 text-[12px]" @click="openEdit(patch)">编辑</button>
           <button
-            class="btn btn-ghost h-7 px-2.5 text-[12px] border-[#4a2427] text-danger"
+            class="btn btn-ghost h-7 px-2.5 text-[12px] border-[#4a2a24] text-danger"
             @click="remove(patch)"
           >
             删除
@@ -252,7 +252,7 @@ onMounted(load);
           <input v-model="form.remark" class="field" placeholder="例如：需先安装原版再打补丁" />
         </div>
         <label class="flex cursor-pointer items-center gap-2 text-[12.5px] text-ink-2">
-          <input v-model="form.installed" type="checkbox" class="accent-[#8b7cf6]" />
+          <input v-model="form.installed" type="checkbox" />
           已安装
         </label>
       </div>

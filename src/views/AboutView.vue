@@ -43,7 +43,7 @@ onMounted(() => {
       <!-- 头部 -->
       <section class="mb-6 flex items-start gap-4">
         <div
-          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-rose text-[26px] font-bold text-white shadow-xl shadow-accent/25"
+          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-clay text-[26px] font-bold text-[#2a1806] shadow-xl shadow-accent/25"
         >
           G
         </div>

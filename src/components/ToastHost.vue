@@ -2,10 +2,10 @@
 import { dismiss, toasts, type ToastKind } from "../utils/toast";
 
 const palette: Record<ToastKind, { bar: string; icon: string }> = {
-  success: { bar: "#7dd67d", icon: "M2 6.2l2.6 2.6L10 .8" },
-  error: { bar: "#f2555a", icon: "M1.5 1.5l9 9M10.5 1.5l-9 9" },
-  info: { bar: "#8b7cf6", icon: "M6 3v.01M6 5.5v4" },
-  warn: { bar: "#f0b429", icon: "M6 2.5v4.2M6 9v.01" },
+  success: { bar: "#a9bd6b", icon: "M2 6.2l2.6 2.6L10 .8" },
+  error: { bar: "#dd5f4a", icon: "M1.5 1.5l9 9M10.5 1.5l-9 9" },
+  info: { bar: "#e0913c", icon: "M6 3v.01M6 5.5v4" },
+  warn: { bar: "#e8b04b", icon: "M6 2.5v4.2M6 9v.01" },
 };
 </script>
 
@@ -26,7 +26,7 @@ const palette: Record<ToastKind, { bar: string; icon: string }> = {
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path
                 :d="palette[item.kind].icon"
-                stroke="#0a0b0f"
+                stroke="#100d0a"
                 stroke-width="1.8"
                 stroke-linecap="round"
               />

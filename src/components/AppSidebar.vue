@@ -83,7 +83,7 @@ async function removeCategory(id: number, name: string) {
       >
         <!-- 选中态左侧指示条 -->
         <span
-          class="absolute top-1/2 -left-2.5 h-4 w-[2.5px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-accent to-rose transition-opacity"
+          class="absolute top-1/2 -left-2.5 h-4 w-[2.5px] -translate-y-1/2 rounded-r-full bg-gradient-to-b from-accent to-clay transition-opacity"
           :class="route.name === item.name ? 'opacity-100' : 'opacity-0'"
         />
         <svg
@@ -262,8 +262,8 @@ async function removeCategory(id: number, name: string) {
     <div v-if="settings.running.length" class="border-t border-line-soft px-3 py-3">
       <div class="mb-2 flex items-center gap-1.5">
         <span class="relative flex h-1.5 w-1.5">
-          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan opacity-70" />
-          <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-cyan" />
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-70" />
+          <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-sage" />
         </span>
         <span class="text-[10.5px] font-semibold tracking-widest text-ink-3 uppercase">
           运行中
@@ -275,7 +275,7 @@ async function removeCategory(id: number, name: string) {
         :to="`/game/${item.gameId}`"
         class="flex items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-surface-2"
       >
-        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-cyan" />
+        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-sage" />
         <span class="min-w-0 flex-1 truncate text-[12px] text-ink-2">{{ item.title }}</span>
       </RouterLink>
     </div>

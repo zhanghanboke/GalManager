@@ -99,25 +99,25 @@ export const STATUS_LABELS: Record<string, string> = {
   dropped: "弃坑",
 };
 
-/** 游玩状态 → 颜色（Tailwind 任意值写法） */
+/** 游玩状态 → 颜色（暖色系：琥珀 = 进行中，橄榄 = 已完成，赤陶 = 搁置） */
 export const STATUS_COLORS: Record<string, string> = {
-  unplayed: "#6d7689",
-  playing: "#4dd4d4",
-  completed: "#7dd67d",
-  on_hold: "#f0b429",
-  dropped: "#f2555a",
+  unplayed: "#8a7d6d",
+  playing: "#e8a33d",
+  completed: "#8fb96a",
+  on_hold: "#c98f6a",
+  dropped: "#dd5f4a",
 };
 
-/** 标签颜色盘 */
+/** 标签颜色盘：全部落在暖色区间（琥珀 / 赤陶 / 橄榄 / 金 / 铜） */
 export const TAG_PALETTE = [
-  "#8b7cf6",
-  "#f472b6",
-  "#4dd4d4",
-  "#f0b429",
-  "#7dd67d",
-  "#f2555a",
-  "#60a5fa",
-  "#c084fc",
+  "#e0913c",
+  "#c96a52",
+  "#a9bd6b",
+  "#d9a441",
+  "#b98a5e",
+  "#dd5f4a",
+  "#8a9a5b",
+  "#cf8f5a",
 ];
 
 /** 根据字符串稳定地取一个颜色（同名标签颜色固定） */

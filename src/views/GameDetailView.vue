@@ -47,7 +47,7 @@ const coverUrl = computed(() =>
 );
 
 const statusColor = computed(() =>
-  game.value ? (STATUS_COLORS[game.value.playStatus] ?? "#6d7689") : "#6d7689",
+  game.value ? (STATUS_COLORS[game.value.playStatus] ?? "#8a7d6d") : "#8a7d6d",
 );
 
 async function load() {
@@ -171,7 +171,7 @@ onMounted(load);
               :title="game.favorite === 1 ? '取消收藏' : '加入收藏'"
               @click="toggleFavorite"
             >
-              <svg width="14" height="14" viewBox="0 0 12 12" :fill="game.favorite === 1 ? '#f0b429' : 'none'" :stroke="game.favorite === 1 ? '#f0b429' : '#6d7689'" stroke-width="1.2">
+              <svg width="14" height="14" viewBox="0 0 12 12" :fill="game.favorite === 1 ? '#e8b04b' : 'none'" :stroke="game.favorite === 1 ? '#e8b04b' : '#8a7d6d'" stroke-width="1.2">
                 <path d="M6 .8l1.6 3.3 3.6.5-2.6 2.5.6 3.6L6 9l-3.2 1.7.6-3.6L.8 4.6l3.6-.5z" />
               </svg>
             </button>
@@ -227,7 +227,7 @@ onMounted(load);
             </select>
 
             <button
-              class="btn btn-ghost ml-auto border-[#4a2427] text-danger"
+              class="btn btn-ghost ml-auto border-[#4a2a24] text-danger"
               @click="removeGame"
             >
               移除

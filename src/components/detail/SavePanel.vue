@@ -170,7 +170,7 @@ onMounted(async () => {
     <section class="panel p-4">
       <div class="mb-3 flex items-center gap-2.5">
         <h3 class="text-[13px] font-semibold text-ink">存档位置</h3>
-        <span v-if="probe" class="chip" :class="probe.confidence >= 70 ? 'text-lime' : 'text-ink-3'">
+        <span v-if="probe" class="chip" :class="probe.confidence >= 70 ? 'text-sage' : 'text-ink-3'">
           {{ probe.engineLabel }} · 置信度 {{ probe.confidence }}%
         </span>
         <button class="btn btn-ghost ml-auto h-7 px-2.5 text-[12px]" :disabled="loading" @click="loadProbe">
@@ -202,7 +202,7 @@ onMounted(async () => {
         >
           <span
             class="h-2 w-2 shrink-0 rounded-full"
-            :style="{ background: candidate.exists && candidate.fileCount > 0 ? '#7dd67d' : candidate.exists ? '#f0b429' : '#3d4453' }"
+            :style="{ background: candidate.exists && candidate.fileCount > 0 ? '#a9bd6b' : candidate.exists ? '#e8b04b' : '#4d4033' }"
           />
           <div class="min-w-0 flex-1">
             <p class="truncate text-[12px] text-ink">{{ candidate.path }}</p>
@@ -303,7 +303,7 @@ onMounted(async () => {
                 一键还原
               </button>
               <button
-                class="btn btn-ghost h-7 px-2.5 text-[12px] border-[#4a2427] text-danger"
+                class="btn btn-ghost h-7 px-2.5 text-[12px] border-[#4a2a24] text-danger"
                 @click="doDelete(slot)"
               >
                 删除

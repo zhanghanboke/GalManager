@@ -90,7 +90,7 @@ function close() {
     <!-- 品牌 -->
     <div class="flex items-center gap-2.5 pl-3.5">
       <div
-        class="flex h-[22px] w-[22px] items-center justify-center rounded-[7px] bg-gradient-to-br from-accent to-rose text-[12px] font-bold text-white shadow-sm shadow-accent/30"
+        class="flex h-[22px] w-[22px] items-center justify-center rounded-[7px] bg-gradient-to-br from-accent to-clay text-[12px] font-bold text-[#2a1806] shadow-sm shadow-accent/30"
       >
         G
       </div>
@@ -163,10 +163,10 @@ function close() {
 
 <style scoped>
 .titlebar {
-  background: linear-gradient(180deg, #14171f 0%, #101319 100%);
+  background: linear-gradient(180deg, #1c1611 0%, #171310 100%);
   border-bottom: 1px solid var(--color-line-soft);
   /* 顶部一丝高光，让标题栏与内容区分层更自然 */
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
 .tb-btn {
